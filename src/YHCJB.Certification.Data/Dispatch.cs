@@ -116,12 +116,15 @@ namespace YHCJB.Certification.Data
 
                         dstRowIdx ++;
                     }
-                    var outFile = Path.Combine(dwDir, cs + ".xls");
-                    if (File.Exists(outFile))
-                        File.Delete(outFile);
-                    using (var outStream = new FileStream(outFile, FileMode.CreateNew))
+                    if (dstRowIdx > srcRowIdx) // has data
                     {
-                        outBook.Write(outStream);
+                        var outFile = Path.Combine(dwDir, cs + ".xls");
+                        if (File.Exists(outFile))
+                            File.Delete(outFile);
+                        using (var outStream = new FileStream(outFile, FileMode.CreateNew))
+                        {
+                            outBook.Write(outStream);
+                        }
                     }
                     outBook.Close();
                 }
