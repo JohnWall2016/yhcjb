@@ -8,21 +8,8 @@ using System.Linq;
 
 namespace YHCJB.Certification.Data
 {
-    class Dispatch
+    partial class Dispatch
     {
-        static readonly string[] dwPatterns = {
-            "湘潭市雨湖区((.*?乡)(.*?社区))",
-            "湘潭市雨湖区((.*?乡)(.*?村))",
-            "湘潭市雨湖区((.*?乡)(.*?政府机关))",
-            "湘潭市雨湖区((.*?街道)办事处(.*?社区))",
-            "湘潭市雨湖区((.*?街道)办事处(.*?政府机关))",
-            "湘潭市雨湖区((.*?镇)(.*?社区))",
-            "湘潭市雨湖区((.*?镇)(.*?居委会))",
-            "湘潭市雨湖区((.*?镇)(.*?村))",
-            "湘潭市雨湖区((.*?街道)办事处(.*?村))",
-            "湘潭市雨湖区((.*?镇)(.*?政府机关))",
-        };
-
         static string DumpList<T>(List<T> list)
         {
             string ret = "[";
@@ -81,7 +68,7 @@ namespace YHCJB.Certification.Data
         {
             if (!Directory.Exists(outDir))
                 Directory.CreateDirectory(outDir);
-            foreach (var dw in map.Keys/*.Where(k => k == "城正街街道")*/)
+            foreach (var dw in map.Keys)
             {
                 $"导出 {dw}".Println();
                 var dwDir = Path.Combine(outDir, dw);
@@ -152,7 +139,6 @@ namespace YHCJB.Certification.Data
         static void Main(string[] args)
         {
             var certedBefore = 201809;
-            var xlsTmpl = @"D:\生存认定\2018年\2018年度雨湖区城乡居民基本养老保险待遇领取人员资格认证表（表二）.xls";
             
             if (args.Length != 2)
             {
@@ -181,7 +167,7 @@ namespace YHCJB.Certification.Data
                 if (state == "1")
                 {
                     CertRowInfo current = null;
-                    foreach (var pat in dwPatterns)
+                    foreach (var pat in _dwPatterns)
                     {
                         var match = Regex.Match(region, pat);
                         if (match.Length > 0)
@@ -225,7 +211,7 @@ namespace YHCJB.Certification.Data
             if (statics)
                 DwMapStatics(dwMap);
             else
-                DwMapDispatch(dwMap, sheet, dir, xlsTmpl);
+                DwMapDispatch(dwMap, sheet, dir, _xlsTmpl);
             wbook.Close();
         }
     }
