@@ -138,15 +138,15 @@ namespace YHCJB.Certification.Data
         
         static void Main(string[] args)
         {
-            var certedBefore = 201809;
-            
-            if (args.Length != 2)
+            if (args.Length != 3)
             {
-                $"usage: dotnet run [xls] [outdir|-s]".Println();
+                $"usage: dotnet run [xls] [date] [outdir|-s]".Println();
                 return;
             }
             
-            (var file, var dir) = (args[0], args[1]);
+            (var file, var date, var dir) = (args[0], args[1], args[2]);
+
+            var certedBefore = Convert.ToInt32(date, 10);
 
             var statics = (dir == "-s") ? true : false;
             if (statics)
