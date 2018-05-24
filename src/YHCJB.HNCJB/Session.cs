@@ -166,7 +166,7 @@ namespace YHCJB.HNCJB
             }
         }
 
-        string MakePostContent(string content)
+        string MakeSendContent(string content)
         {
             var result =
                 "POST /hncjb/reports/crud HTTP/1.1\n" +
@@ -186,18 +186,18 @@ namespace YHCJB.HNCJB
                 result += $"Cookie: jsessionid_ylzcbp={_sessionId}" +
                     $"; cxcookie={_cxCookie}\n";
             result += $"\n{content}";
-            //Console.WriteLine($"MakePostContent: {result}");
+            //Console.WriteLine($"MakeSendContent: {result}");
             return result;
         }
 
-        void Post(string serviceContent)
+        void Send(string serviceContent)
         {
-            Write(MakePostContent(serviceContent));
+            Write(MakeSendContent(serviceContent));
         }
 
-        public void Post(string serviceId, object param)
+        public void Send(string serviceId, object param)
         {
-            Post(new Service(serviceId, param) { loginname = Userid, password = Password });
+            Send(new Service(serviceId, param) { loginname = Userid, password = Password });
         }
 
         public string Get()
@@ -207,7 +207,7 @@ namespace YHCJB.HNCJB
 
         public string Login()
         {
-            Post(new Service("loadCurrentUser"));
+            Send(new Service("loadCurrentUser"));
             var header = ReadHeader();
             var match = Regex.Match(header, "Set-Cookie: jsessionid_ylzcbp=(.+?);");
             if (match.Length > 0)
@@ -217,13 +217,13 @@ namespace YHCJB.HNCJB
                 _cxCookie = match.Groups[1].Value;
             ReadBody(header);
 
-            Post("syslogin", new SysLogin { username = Userid, passwd = Password });
+            Send("syslogin", new SysLogin { username = Userid, passwd = Password });
             return Get();
         }
 
         public string Logout()
         {
-            Post(new Service("syslogout"));
+            Send(new Service("syslogout"));
             return Get();
         }
     }

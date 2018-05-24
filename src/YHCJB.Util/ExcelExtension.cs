@@ -1,5 +1,6 @@
 using System;
 using NPOI.HSSF.UserModel;
+using NPOI.SS.UserModel;
 
 namespace YHCJB.Util
 {
@@ -24,6 +25,26 @@ namespace YHCJB.Util
                 }
                 return dstRow;
             }
+        }
+
+        public static ICell Cell(this HSSFSheet sheet, int row, int col)
+        {
+            return sheet.GetRow(row).GetCell(col);
+        }
+
+        public static ICell Cell(this HSSFRow row, int col)
+        {
+            return row.GetCell(col);
+        }
+
+        public static void SetValue(this ICell cell, string value)
+        {
+            cell.SetValue(value);
+        }
+
+        public static void SetValue(this ICell cell, double value)
+        {
+            cell.SetValue(value);
         }
     }
 }
