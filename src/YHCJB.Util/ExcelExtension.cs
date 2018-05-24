@@ -39,12 +39,12 @@ namespace YHCJB.Util
 
         public static void SetValue(this ICell cell, string value)
         {
-            cell.SetValue(value);
+            cell.SetCellValue(value);
         }
 
         public static void SetValue(this ICell cell, double value)
         {
-            cell.SetValue(value);
+            cell.SetCellValue(value);
         }
     }
 }
