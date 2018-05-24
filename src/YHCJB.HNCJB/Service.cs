@@ -86,6 +86,22 @@ namespace YHCJB.HNCJB
         [JsonProperty("aac066")]
         public string dflx = "";
 
+        public static string GetDflxCN(string dflx)
+        {
+            switch (dflx)
+            {
+                case "801":
+                    return "独生子女";
+                case "802":
+                    return "乡村教师";
+                case "803":
+                    return "乡村医生";
+                case "807":
+                    return "电影放映员";
+            }
+            return "";
+        }
+
         public DfrymdQuery(string dflx, string cbzt = "1", string dfzt = "1") : base(1, 500)
         {
             this.dflx = dflx;
@@ -119,7 +135,7 @@ namespace YHCJB.HNCJB
 
         // 代发标准
         [JsonProperty("aae019")]
-        public int dfbz;
+        public int? dfbz;
 
         // 代发类型
         [JsonProperty("aac066s")]
@@ -133,13 +149,31 @@ namespace YHCJB.HNCJB
         [JsonProperty("aac008s")]
         public string jbzt;
 
+        public string JbztCN
+        {
+            get {
+                switch (jbzt)
+                {
+                    case "1":
+                        return "正常参保";
+                    case "2":
+                        return "暂停参保";
+                    case "3":
+                        return "未参保";
+                    case "4":
+                        return "终止参保";
+                }
+                return "";
+            }
+        }
+
         // 代发截至成功发放年月
         [JsonProperty("aae002jz")]
-        public int jzny;
+        public int? jzny;
 
         // 代发截至成功发放金额
         [JsonProperty("aae019jz")]
-        public int jzje;
+        public int? jzje;
     }
 
     public class DfrymdResult : Result

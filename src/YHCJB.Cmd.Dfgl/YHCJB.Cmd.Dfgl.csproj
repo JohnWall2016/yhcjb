@@ -3,6 +3,7 @@
   <ItemGroup>
     <ProjectReference Include="..\YHCJB.HNCJB\YHCJB.HNCJB.csproj" />
     <ProjectReference Include="..\YHCJB.Util\YHCJB.Util.csproj" />
+    <ProjectReference Include="..\..\pkg\NPOI\NPOI.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

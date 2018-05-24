@@ -63,13 +63,13 @@ namespace YHCJB.HNCJB
             _stream.Write(data, 0, data.Length);
         }
 
-        (string, int) Read(int len)
+        (byte[], int) Read(int len)
         {
             if (_stream == null)
                 throw new ApplicationException("service is not connected");
             var data = new Byte[len];
             var size = _stream.Read(data, 0, len);
-            return (Enc.GetString(data, 0, size), size);
+            return (data, size);
         }
 
         string ReadLine()
@@ -119,49 +119,51 @@ namespace YHCJB.HNCJB
 
         string ReadBody(string header = "")
         {
-            var data = new StringBuilder(512);
-            if (header == "")
-                header = ReadHeader();
-            if (Regex.IsMatch(header, "Transfer-Encoding: chunked"))
+            using(var data = new MemoryStream(512))
             {
-                while (true)
+                if (header == "")
+                    header = ReadHeader();
+                if (Regex.IsMatch(header, "Transfer-Encoding: chunked"))
                 {
-                    var len = Convert.ToInt32(ReadLine(), 16);
-                    if (len <= 0)
-                    {
-                        ReadLine();
-                        break;
-                    }
                     while (true)
                     {
-                        (var rec, var rlen) = Read(len);
-                        data.Append(rec);
-                        len -= rlen;
+                        var len = Convert.ToInt32(ReadLine(), 16);
                         if (len <= 0)
                         {
+                            ReadLine();
                             break;
                         }
-                    }
-                    ReadLine();
-                }
-            }
-            else
-            {
-                var match = Regex.Match(header, @"Content-Length: (\d+)");
-                if (match.Length > 0)
-                {
-                    var len = Convert.ToInt32(match.Groups[1].Value, 10);
-                    while (len > 0)
-                    {
-                        (var rec, var rlen) = Read(len);
-                        data.Append(rec);
-                        len -= rlen;
+                        while (true)
+                        {
+                            (var rec, var rlen) = Read(len);
+                            data.Write(rec, 0, rlen);
+                            len -= rlen;
+                            if (len <= 0)
+                            {
+                                break;
+                            }
+                        }
+                        ReadLine();
                     }
                 }
                 else
-                    throw new ApplicationException("Unsupported transfer mode");
+                {
+                    var match = Regex.Match(header, @"Content-Length: (\d+)");
+                    if (match.Length > 0)
+                    {
+                        var len = Convert.ToInt32(match.Groups[1].Value, 10);
+                        while (len > 0)
+                        {
+                            (var rec, var rlen) = Read(len);
+                            data.Write(rec, 0, rlen);
+                            len -= rlen;
+                        }
+                    }
+                    else
+                        throw new ApplicationException("Unsupported transfer mode");
+                }
+                return Enc.GetString(data.GetBuffer(), 0, (int)data.Length);
             }
-            return data.ToString();
         }
 
         string MakePostContent(string content)
