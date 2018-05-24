@@ -10,8 +10,6 @@ namespace YHCJB.Cmd.Dfgl
 {
     partial class Program
     {
-        static void print(string s) => Console.WriteLine(s);
-        
         static void Main(string[] args)
         {
             if (args.Length < 2)
@@ -19,7 +17,7 @@ namespace YHCJB.Cmd.Dfgl
                 _usage.Println();
                 return;
             }
-
+            
             if (args[0] == "zcdf")
                 ExportZcdf(args.Skip(1).ToArray());
             else if (args[1] == "zfmx")
@@ -69,6 +67,7 @@ namespace YHCJB.Cmd.Dfgl
                     row2.Cell(2).SetValue("共计");
                     row2.Cell(3).SetValue(curRow - begRow);
                 });
+            
             var idx = _zcdfTmpl.LastIndexOf('.');
             var saveFile = "";
             if (idx > 0)
@@ -79,6 +78,7 @@ namespace YHCJB.Cmd.Dfgl
             }
             else
                 saveFile = _zcdfTmpl + "(" + DfrymdQuery.GetDflxCN(dflx) + ")";
+            
             using (var outStream = new FileStream(saveFile, FileMode.CreateNew))
             {
                 wbook.Write(outStream);
