@@ -73,7 +73,7 @@ namespace YHCJB.HNCJB
         public string cbzt = ""; // 参保状态
 
         [JsonProperty("aac002")]
-        public string pid = "";
+        public string pid = ""; // 身份证号码
 
         [JsonProperty("aac003")]
         public string name = "";
@@ -180,4 +180,130 @@ namespace YHCJB.HNCJB
     {
         public Dfrymd[] datas;
     }
+
+    public class CbshQuery : PageInfo
+    {
+        public string aaf013 = "", aaf030 = "", aae011 = "";
+        public string aae036 = "", aae036s = "", aae014 = "";
+        public string aae015 = "", aae015s = "", aac009 = "";
+        public string aac002 = "", aac003 = "", sfccb = "";
+
+        // 审核状态: "0":未审核, "1":审核通过, "2":审核不通过
+        [JsonProperty("aae016")]
+        public string shzt = "0";
+
+        public CbshQuery(string shzt = "0") : base(1, 500)
+        {
+            this.shzt = shzt;
+        }
+    }
+
+    public class Cbsh
+    {
+        [JsonProperty("aac004")]
+        public string sex = ""; // "1":男, "2":女
+
+        [JsonProperty("aac003")]
+        public string name = "";
+
+        [JsonProperty("aac006")]
+        public int birthday;
+
+        [JsonProperty("aac005")]
+        public string nation = ""; // 民族
+
+        [JsonProperty("aac009")]
+        public string household = ""; // 户籍
+
+        public int aac049;
+
+        [JsonProperty("aac066")]
+        public string type = ""; // 参保身份
+
+        public string aae476 = "";
+
+        public int aaz165;
+        
+        public string aaf103 = "";
+
+        [JsonProperty("aac001")]
+        public int id;
+        
+        public string aae140 = "";
+        public string aaf102 = "";
+
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        public string aaf101 = "";
+        
+        public string aaa129 = "", aae016 = "";
+
+        public int aaz158;
+        
+        public string aae036 = "", aae011 = "";
+
+        public int aaz177;
+
+        public CbshSave ToCbshSave()
+        {
+            return new CbshSave {
+                sex = sex,
+                name = name,
+                birthday = $"{birthday}",
+                nation = nation,
+                household = household,
+                aac049 = $"{aac049}",
+                type = type,
+                aae476 = aae476,
+                aaz165 = $"{aaz165}",
+                aaf103 = aaf103,
+                id = $"{id}",
+                aae140 = aae140,
+                aaf102 = aaf102,
+                pid = pid,
+                aaf101 = aaf101,
+                aaa129 = aaa129,
+                aae016 = aae016,
+                aaz158 = aaz158, // int
+                aae036 = aae036,
+                aae011 = aae011,
+                aaz177 = $"{aaz177}",
+            };
+        }
+    }
+
+    public class CbshSave : Cbsh
+    {
+        [JsonProperty("aac006")]
+        public new string birthday;
+
+        public new string aac049;
+
+        public new string aaz165;
+
+        [JsonProperty("aac001")]
+        public new string id;
+
+        public new string aaz177;
+        
+        public string aaa129cj = "";
+    }
+
+    public class CbshResult : Result
+    {
+        public Cbsh[] datas;
+    }
+
+    public class CbshGotoSave
+    {
+        public ArrayList rows = new ArrayList();
+        public string bz = "";
+
+        public void AddRow(CbshSave save)
+        {
+            rows.Add(save);
+        }
+    }
+    
 }

@@ -20,21 +20,32 @@ namespace YHCJB.Util
         {
             if (str != null)
             {
-                var fillLength = length - _hzReg.Matches(str).Count * 2;
+                var fillLength = length - _hzReg.Matches(str).Count - str.Length;
                 return (fillLength > 0) ? new string(chr, fillLength) + str : str;
             }
             return new string(chr, length);
+        }
 
+        public static string AlignRight(this string str, string append, int length, char chr = ' ')
+        {
+            if (str == null) str = "";
+            return str + append.AlignRight(length, chr);
         }
 
         public static string AlignLeft(this string str, int length, char chr = ' ')
         {
             if (str != null)
             {
-                var fillLength = length - _hzReg.Matches(str).Count * 2;
+                var fillLength = length - _hzReg.Matches(str).Count - str.Length;
                 return (fillLength > 0) ? str + new string(chr, fillLength) : str;
             }
             return new string(chr, length);
+        }
+
+        public static string AlignLeft(this string str, string append, int length, char chr = ' ')
+        {
+            if (str == null) str = "";
+            return str + append.AlignLeft(length, chr);
         }
     }
 }

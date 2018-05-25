@@ -168,11 +168,12 @@ namespace YHCJB.HNCJB
 
         string MakeSendContent(string content)
         {
+            
             var result =
                 "POST /hncjb/reports/crud HTTP/1.1\n" +
                 $"Host: {Url}\n" +
                 "Connection: keep-alive\n" +
-                $"Content-Length: {content.Length}\n"+
+                $"Content-Length: {Enc.GetByteCount(content)}\n"+
                 "Accept: application/json, text/javascript, */*; q=0.01\n"+
                 $"Origin: http://{Url}\n"+
                 "X-Requested-With: XMLHttpRequest\n"+
