@@ -22,30 +22,59 @@ namespace YHCJB.Util
                     var srcCell = srcRow.GetCell(idx);
                     dstCell.SetCellType(srcCell.CellType);
                     dstCell.CellStyle = srcCell.CellStyle;
+                    dstCell.SetValue("");
                 }
                 return dstRow;
             }
         }
 
-        public static ICell Cell(this HSSFSheet sheet, int row, int col)
+        public static void CopyRowsFrom(this HSSFSheet sheet, int start, int count, int srcRowIdx)
         {
-            return sheet.GetRow(row).GetCell(col);
+            sheet.ShiftRows(start, sheet.LastRowNum, count, true, false);
+            var srcRow = (HSSFRow)sheet.GetRow(srcRowIdx);
+            for (var i = 0; i < count; i++)
+            {
+                var dstRow = (HSSFRow)sheet.CreateRow(start + i);
+                dstRow.Height = srcRow.Height;
+                for (var idx = (int)srcRow.FirstCellNum; idx < srcRow.PhysicalNumberOfCells; idx++)
+                {
+                    var dstCell = dstRow.CreateCell(idx);
+                    var srcCell = srcRow.GetCell(idx);
+                    dstCell.SetCellType(srcCell.CellType);
+                    dstCell.CellStyle = srcCell.CellStyle;
+                    dstCell.SetValue("");
+                }
+            }
         }
 
-        public static ICell Cell(this HSSFRow row, int col)
+        public static void DuplicateRows(this HSSFSheet sheet, int rowIdx, int count)
         {
-            return row.GetCell(col);
+            sheet.ShiftRows(rowIdx + 1, sheet.LastRowNum, count - 1, true, false);
+            var srcRow = (HSSFRow)sheet.GetRow(rowIdx);
+            for (var i = 1; i < count; i++)
+            {
+                var dstRow = (HSSFRow)sheet.CreateRow(rowIdx + i);
+                dstRow.Height = srcRow.Height;
+                for (var idx = (int)srcRow.FirstCellNum; idx < srcRow.PhysicalNumberOfCells; idx++)
+                {
+                    var dstCell = dstRow.CreateCell(idx);
+                    var srcCell = srcRow.GetCell(idx);
+                    dstCell.SetCellType(srcCell.CellType);
+                    dstCell.CellStyle = srcCell.CellStyle;
+                    dstCell.SetValue("");
+                }
+            }
         }
 
-        public static void SetValue(this ICell cell, string value)
-        {
-            cell.SetCellValue(value);
-        }
+        public static IRow Row(this ISheet sheet, int row) => sheet.GetRow(row);
+        
+        public static ICell Cell(this ISheet sheet, int row, int col) => sheet.GetRow(row).GetCell(col);
 
-        public static void SetValue(this ICell cell, double value)
-        {
-            cell.SetCellValue(value);
-        }
+        public static ICell Cell(this IRow row, int col) => row.GetCell(col);
+
+        public static void SetValue(this ICell cell, string value) => cell.SetCellValue(value);
+
+        public static void SetValue(this ICell cell, double value) => cell.SetCellValue(value);
     }
 }
 

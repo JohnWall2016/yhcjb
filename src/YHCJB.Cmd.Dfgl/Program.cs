@@ -35,19 +35,21 @@ namespace YHCJB.Cmd.Dfgl
             var sheet = (HSSFSheet)wbook.GetSheetAt(0);
 
             var date = $"{DateTime.Now:yyyyMMdd}";
-            var zbdate = $"制表时间：{DateTime.Now:D}";
+            var zbdate = $"制表时间：{DateTime.Now:yyyy年M月d日}";
 
             sheet.Cell(1, 6).SetValue(zbdate);
             
             Session.Using(session => {
-                    int begRow = 3, curRow = begRow;
                     session.Send("executeDfrymdQuery", new DfrymdQuery(dflx));
-                    var res = Service.FromJson<DfrymdResult>(session.Get());
+                    var resp = session.Get();
+                    var res = Service.FromJson<DfrymdResult>(resp);
+                    (var begRow, var curRow) = (3, 3);
+                    sheet.DuplicateRows(curRow, res.datas.Length);
                     foreach (var item in res.datas)
                     {
                         if (item.id == 0) continue;
 
-                        var row = sheet.GetOrCopyRowFrom(curRow, begRow);
+                        var row = sheet.Row(curRow);
                         row.Cell(0).SetValue(curRow - begRow + 1);
                         row.Cell(1).SetValue(item.region);
                         row.Cell(2).SetValue(item.name);
@@ -63,7 +65,7 @@ namespace YHCJB.Cmd.Dfgl
                             row.Cell(9).SetValue((int)item.jzje);
                         curRow += 1;
                     }
-                    var row2 = sheet.GetOrCopyRowFrom(curRow, begRow);
+                    var row2 = sheet.Row(curRow); 
                     row2.Cell(2).SetValue("共计");
                     row2.Cell(3).SetValue(curRow - begRow);
                 });

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using NPOI.HSSF.UserModel;
 using YHCJB.Util;
-using System.Linq;
 
 namespace YHCJB.Certification.Data
 {
@@ -83,23 +83,23 @@ namespace YHCJB.Certification.Data
                     var srcRowIdx = 4;
                     var dstRowIdx = srcRowIdx;
 
-                    outSheet.GetRow(1).GetCell(2).SetCellValue(dw+cs);
+                    outSheet.Cell(1, 2).SetValue(dw+cs);
 
                     var rowInfo = map[dw][cs];
                     foreach (var idx in rowInfo.UncertedRows)
                     {
-                        var inRow = inSheet.GetRow(idx);
-                        var name = inRow.GetCell(2).StringCellValue;
-                        var id = inRow.GetCell(3).StringCellValue;
-                        var sex = (inRow.GetCell(4).StringCellValue == "1") ? "男" : "女";
-                        var region = inRow.GetCell(0).StringCellValue;
+                        var inRow = inSheet.Row(idx);
+                        var name = inRow.Cell(2).StringCellValue;
+                        var id = inRow.Cell(3).StringCellValue;
+                        var sex = (inRow.Cell(4).StringCellValue == "1") ? "男" : "女";
+                        var region = inRow.Cell(0).StringCellValue;
                         
                         var outRow = outSheet.GetOrCopyRowFrom(dstRowIdx, srcRowIdx);
-                        outRow.GetCell(0).SetCellValue(dstRowIdx - srcRowIdx + 1);
-                        outRow.GetCell(1).SetCellValue(name);
-                        outRow.GetCell(2).SetCellValue(sex);
-                        outRow.GetCell(3).SetCellValue(id);
-                        outRow.GetCell(4).SetCellValue(region);
+                        outRow.Cell(0).SetValue(dstRowIdx - srcRowIdx + 1);
+                        outRow.Cell(1).SetValue(name);
+                        outRow.Cell(2).SetValue(sex);
+                        outRow.Cell(3).SetValue(id);
+                        outRow.Cell(4).SetValue(region);
 
                         dstRowIdx ++;
                     }
@@ -160,10 +160,10 @@ namespace YHCJB.Certification.Data
             
             for (var i = 1; i <= sheet.LastRowNum; i++)
             {
-                var region = sheet.GetRow(i).GetCell(0).StringCellValue;
-                var state = sheet.GetRow(i).GetCell(6).StringCellValue;
-                var nextTime = int.Parse(sheet.GetRow(i).GetCell(8).StringCellValue);
-                var certedType = sheet.GetRow(i).GetCell(7).StringCellValue;
+                var region = sheet.Cell(i, 0).StringCellValue;
+                var state = sheet.Cell(i, 6).StringCellValue;
+                var nextTime = int.Parse(sheet.Cell(i, 8).StringCellValue);
+                var certedType = sheet.Cell(i, 7).StringCellValue;
                 if (state == "1")
                 {
                     CertRowInfo current = null;
