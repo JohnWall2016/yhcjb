@@ -215,7 +215,10 @@ namespace YHCJB.HNCJB
         [JsonProperty("aac009")]
         public string household = ""; // 户籍
 
-        public int aac049;
+        public int aac049; // 参保时间?
+
+        [JsonProperty("aae005", NullValueHandling=NullValueHandling.Ignore)]
+        public string phone = null; // 可选?
 
         [JsonProperty("aac066")]
         public string type = ""; // 参保身份
@@ -224,24 +227,29 @@ namespace YHCJB.HNCJB
 
         public int aaz165;
         
-        public string aaf103 = "";
+        public string aaf103 = ""; // 村社区
 
         [JsonProperty("aac001")]
         public int id;
         
-        public string aae140 = "";
-        public string aaf102 = "";
+        public string aae140 = ""; // 社保类型: "170":居保
+        
+        public string aaf102 = ""; // 组
 
         [JsonProperty("aac002")]
         public string pid = ""; // 身份证号码
 
-        public string aaf101 = "";
+        public string aaf101 = ""; // 区划编码
         
-        public string aaa129 = "", aae016 = "";
+        public string aaa129 = ""; // 县市区
+
+        public string aae016 = "";
 
         public int aaz158;
         
-        public string aae036 = "", aae011 = "";
+        public string aae036 = ""; // 录入时间
+
+        public string aae011 = ""; // 录入人
 
         public int aaz177;
 
@@ -254,6 +262,7 @@ namespace YHCJB.HNCJB
                 nation = nation,
                 household = household,
                 aac049 = $"{aac049}",
+                phone = phone,
                 type = type,
                 aae476 = aae476,
                 aaz165 = $"{aaz165}",
