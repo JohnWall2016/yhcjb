@@ -42,6 +42,7 @@ namespace YHCJB.HNCJB
     public class CustomService : IService
     {
         public string Id { get; }
+        
         public CustomService(string serviceid)
         {
             Id = serviceid;

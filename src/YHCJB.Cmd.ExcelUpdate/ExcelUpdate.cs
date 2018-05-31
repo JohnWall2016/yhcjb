@@ -10,7 +10,6 @@ namespace YHCJB.Cmd.ExcelUpdate
     {
         static void Main(string[] args)
         {
-
             var wbook = new HSSFWorkbook(new FileStream(_file1, FileMode.Open));
             var sheet = (HSSFSheet)wbook.GetSheetAt(0);
             
