@@ -419,4 +419,78 @@ namespace YHCJB.HNCJB
         [JsonProperty("aae015")]
         public string shsj = ""; // 审核时间
     }
+
+    public class GrinfoQuery : PageService
+    {
+        [JsonProperty("aaf013")]
+        public string xzqh = ""; // 行政区划编码
+
+        [JsonProperty("aaz070")]
+        public string cjbm = ""; // 村级编码
+
+        public string aaf101 = "", aac009 = "";
+
+        [JsonProperty("aac008")]
+        public string cbzt = ""; // 参保状态: "1"-正常参保 "2"-暂停参保 "4"-终止参保 "0"-未参保
+
+        [JsonProperty("aac031")]
+        public string jfzt = ""; //缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
+
+        public string aac006str = "", aac006end = "";
+        public string aac066 = "", aae030str = "";
+        public string aae030end = "", aae476 = "";
+
+        [JsonProperty("aac003")]
+        public string name = "";
+
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+        
+        public GrinfoQuery(string pid) : base("zhcxgrinfoQuery")
+        {
+            this.pid = pid;
+        }
+    }
+
+    public class Grinfo
+    {
+        [JsonProperty("aac001")]
+        public int grbh; // 个人编号
+
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        [JsonProperty("aac003")]
+        public string name = "";
+
+        [JsonProperty("aac006")]
+        public int birthday;
+
+        [JsonProperty("aac008")]
+        public string cbzt = ""; // 参保状态: "1"-正常参保 "2"-暂停参保 "4"-终止参保 "0"-未参保
+
+        [JsonProperty("aac010")]
+        public string hkszd = ""; // 户口所在地
+
+        [JsonProperty("aac031")]
+        public string jfzt = ""; // 缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
+
+        [JsonProperty("aae005")]
+        public string phone = "";
+
+        [JsonProperty("aae006")]
+        public string address = "";
+
+        [JsonProperty("aae010")]
+        public string bankcard = "";
+
+        [JsonProperty("aaf101")]
+        public string xzqh = ""; // 行政区划编码
+
+        [JsonProperty("aaf102")]
+        public string czmc = ""; // 村组名称
+
+        [JsonProperty("aaf103")]
+        public string csmc = ""; // 村社区名称
+    }
 }
