@@ -201,11 +201,21 @@ namespace YHCJB.HNCJB
             Send(new Service(serviceId, param) { loginname = Userid, password = Password });
         }
 
+        public void Send(IService serv)
+        {
+            Send(serv.Id, serv);
+        }
+
         public string Get()
         {
             return ReadBody();
         }
 
+        public T Get<T>() where T : class
+        {
+            return Service.FromJson<T>(Get());
+        }
+            
         public string Login()
         {
             Send(new Service("loadCurrentUser"));
@@ -218,7 +228,7 @@ namespace YHCJB.HNCJB
                 _cxCookie = match.Groups[1].Value;
             ReadBody(header);
 
-            Send("syslogin", new SysLogin { username = Userid, passwd = Password });
+            Send(new SysLogin { username = Userid, passwd = Password });
             return Get();
         }
 

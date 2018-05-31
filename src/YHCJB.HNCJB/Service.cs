@@ -4,6 +4,11 @@ using Newtonsoft.Json;
 
 namespace YHCJB.HNCJB
 {
+    public interface IService
+    {
+        string Id { get; }
+    }
+    
     public class Service : Json<Service>
     {
         public string serviceid { get; } = "";
@@ -26,22 +31,32 @@ namespace YHCJB.HNCJB
         {
         }
 
+        public Service(IService serv) :
+            this(serv.Id, serv)
+        {
+        }
+
         public static implicit operator string(Service serv) => serv?.ToJson() ?? "";
     }
-
-    public class SysLogin
+    
+    public class CustomService : IService
     {
-        public string username, passwd;
+        public string Id { get; }
+        public CustomService(string serviceid)
+        {
+            Id = serviceid;
+        }
     }
 
-    public class PageInfo
+    public class PageService : CustomService
     {
         public int page, pagesize;
         public ArrayList filtering = new ArrayList();
         public ArrayList sorting = new ArrayList();
         public ArrayList totals = new ArrayList();
 
-        public PageInfo(int page = 1, int size = 15)
+        public PageService(string serviceid, int page = 1, int size = 15)
+            : base(serviceid)
         {
             this.page = page;
             this.pagesize = size;
@@ -64,7 +79,19 @@ namespace YHCJB.HNCJB
         public string serviceid, type, vcode, message, messagedetail;
     }
 
-    public class DfrymdQuery : PageInfo
+    public class Result<TData> : Result where TData : class
+    {
+        public TData[] datas;
+    }
+
+    public class SysLogin : CustomService
+    {
+        public string username, passwd;
+
+        public SysLogin() : base("syslogin") {}
+    }
+
+    public class DfrymdQuery : PageService
     {
         public string aaf013 = "", aaf030 = "", aac082 = "";
 
@@ -102,16 +129,18 @@ namespace YHCJB.HNCJB
             return "";
         }
 
-        public DfrymdQuery(string dflx, string cbzt = "1", string dfzt = "1") : base(1, 500)
+        public DfrymdQuery(string dflx, string cbzt = "1", string dfzt = "1")
+            : base("executeDfrymdQuery", 1, 500)
         {
             this.dflx = dflx;
             this.cbzt = cbzt;
             this.dfzt = dfzt;
 
-            AddSorting(new Hashtable() {
-                    ["dataKey"] = "aaf103",
-                    ["sortDirection"] = "ascending"
-                });
+            AddSorting(new Hashtable()
+            {
+                ["dataKey"] = "aaf103",
+                ["sortDirection"] = "ascending"
+            });
         }
     }
 
@@ -151,7 +180,8 @@ namespace YHCJB.HNCJB
 
         public string JbztCN
         {
-            get {
+            get
+            {
                 switch (jbzt)
                 {
                     case "1":
@@ -176,12 +206,12 @@ namespace YHCJB.HNCJB
         public int? jzje;
     }
 
-    public class DfrymdResult : Result
+    /*public class DfrymdResult : Result
     {
         public Dfrymd[] datas;
-    }
+    }*/
 
-    public class CbshQuery : PageInfo
+    public class CbshQuery : PageService
     {
         public string aaf013 = "", aaf030 = "", aae011 = "";
         public string aae036 = "", aae036s = "", aae014 = "";
@@ -192,7 +222,8 @@ namespace YHCJB.HNCJB
         [JsonProperty("aae016")]
         public string shzt = "0";
 
-        public CbshQuery(string shzt = "0") : base(1, 500)
+        public CbshQuery(string shzt = "0")
+            : base("cbshQuery", 1, 500)
         {
             this.shzt = shzt;
         }
@@ -255,7 +286,8 @@ namespace YHCJB.HNCJB
 
         public CbshSave ToCbshSave()
         {
-            return new CbshSave {
+            return new CbshSave
+            {
                 sex = sex,
                 name = name,
                 birthday = $"{birthday}",
@@ -299,12 +331,12 @@ namespace YHCJB.HNCJB
         public string aaa129cj = "";
     }
 
-    public class CbshResult : Result
+    /*public class CbshResult : Result
     {
         public Cbsh[] datas;
-    }
+    }*/
 
-    public class CbshGotoSave
+    public class CbshGotoSave : CustomService
     {
         public ArrayList rows = new ArrayList();
         public string bz = "";
@@ -313,6 +345,78 @@ namespace YHCJB.HNCJB
         {
             rows.Add(save);
         }
+
+        public CbshGotoSave() : base("cbshGotoSave") {}
     }
-    
+
+    public class CbzzfhQuery : PageService
+    {
+        public string aaf013 = "", aaf030 = "", aae016 = "";
+        public string aae011 = "", aae036 = "", aae036s = "";
+        public string aae014 = "", aae015 = "", aae015s = "";
+
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        [JsonProperty("aac003")]
+        public string name = "";
+
+        public CbzzfhQuery(string pid, string name = "")
+            : this("cbzzfhPerInfoList")
+        {
+            this.pid = pid;
+            this.name = name;
+        }
+
+        protected CbzzfhQuery(string serviceid) : base(serviceid)
+        {
+        }
+    }
+
+    public class Cbzzfh
+    {
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        [JsonProperty("aac003")]
+        public string name = "";
+
+        public string aaz002 = "", aac001 = "", aaa027 = "";
+        public string aaz038 = "", aae160 = "";
+
+        [JsonProperty("aae031")]
+        public int zzny; // 终止年月
+
+        [JsonProperty("aae015")]
+        public string shsj = ""; // 审核时间
+    }
+
+    public class DyzzfhQuery : CbzzfhQuery
+    {
+        public string aic301;
+
+        public DyzzfhQuery(string pid, string name = "")
+            : base("dyzzfhPerInfoList")
+        {
+            this.pid = pid;
+            this.name = name;
+        }
+    }
+
+    public class Dyzzfh
+    {
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        [JsonProperty("aac003")]
+        public string name = "";
+
+        public string aac001 = "", aaa027 = "", aaz176 = "";
+
+        [JsonProperty("aae031")]
+        public int zzny; // 终止年月
+
+        [JsonProperty("aae015")]
+        public string shsj = ""; // 审核时间
+    }
 }
