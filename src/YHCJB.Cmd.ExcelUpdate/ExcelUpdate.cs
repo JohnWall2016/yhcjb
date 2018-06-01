@@ -10,7 +10,7 @@ namespace YHCJB.Cmd.ExcelUpdate
     {
         static void Main(string[] args)
         {
-            var wbook = new HSSFWorkbook(new FileStream(_file1, FileMode.Open));
+            var wbook = new HSSFWorkbook(new FileStream(args[0], FileMode.Open));
             var sheet = (HSSFSheet)wbook.GetSheetAt(0);
             
             Session.Using((session) =>
@@ -22,15 +22,22 @@ namespace YHCJB.Cmd.ExcelUpdate
                     var rs = session.Get<Result<Grinfo>>();
                     var txt = "";
                     if (rs.datas.Length > 0)
-                        txt += rs.datas[0].name + "制度衔接转出相关资料";
+                    {
+                        if (sheet.Cell(i, 3)?.StringCellValue != "1")
+                            txt += rs.datas[0].name + "制度衔接转出相关资料";
+                        else
+                            txt += rs.datas[0].name + "制度衔接转入相关资料";
+                    }
                     else
                         txt = "未查到此人信息";
                     txt.Println();
-                    sheet.Cell(i, 3).SetCellValue(txt);
+                    if (sheet.Cell(i, 4) is null)
+                        sheet.Row(i).CreateCell(4);
+                    sheet.Cell(i, 4).SetCellValue(txt);
                 }
             });
 
-            using (var outStream = new FileStream(Utils.FileNameAppend(_file1, ".upd"), FileMode.CreateNew))
+            using (var outStream = new FileStream(Utils.FileNameAppend(args[0], ".upd"), FileMode.CreateNew))
             {
                 wbook.Write(outStream);
             }
