@@ -207,11 +207,6 @@ namespace YHCJB.HNCJB
         public int? jzje;
     }
 
-    /*public class DfrymdResult : Result
-    {
-        public Dfrymd[] datas;
-    }*/
-
     public class CbshQuery : PageService
     {
         public string aaf013 = "", aaf030 = "", aae011 = "";
@@ -332,11 +327,6 @@ namespace YHCJB.HNCJB
         public string aaa129cj = "";
     }
 
-    /*public class CbshResult : Result
-    {
-        public Cbsh[] datas;
-    }*/
-
     public class CbshGotoSave : CustomService
     {
         public ArrayList rows = new ArrayList();
@@ -377,24 +367,24 @@ namespace YHCJB.HNCJB
     public class Cbzzfh
     {
         [JsonProperty("aac002")]
-        public string pid = ""; // 身份证号码
+        public string pid; // 身份证号码
 
         [JsonProperty("aac003")]
-        public string name = "";
+        public string name;
 
-        public string aaz002 = "", aac001 = "", aaa027 = "";
-        public string aaz038 = "", aae160 = "";
+        public string aaz002, aac001, aaa027;
+        public string aaz038, aae160;
 
         [JsonProperty("aae031")]
         public int zzny; // 终止年月
 
         [JsonProperty("aae015")]
-        public string shsj = ""; // 审核时间
+        public string shsj; // 审核时间
     }
 
     public class DyzzfhQuery : CbzzfhQuery
     {
-        public string aic301;
+        public string aic301 = "";
 
         public DyzzfhQuery(string pid, string name = "")
             : base("dyzzfhPerInfoList")
@@ -407,18 +397,18 @@ namespace YHCJB.HNCJB
     public class Dyzzfh
     {
         [JsonProperty("aac002")]
-        public string pid = ""; // 身份证号码
+        public string pid; // 身份证号码
 
         [JsonProperty("aac003")]
-        public string name = "";
+        public string name;
 
-        public string aac001 = "", aaa027 = "", aaz176 = "";
+        public string aac001, aaa027, aaz176;
 
         [JsonProperty("aae031")]
         public int zzny; // 终止年月
 
         [JsonProperty("aae015")]
-        public string shsj = ""; // 审核时间
+        public string shsj; // 审核时间
     }
 
     public class GrinfoQuery : PageService
@@ -459,40 +449,40 @@ namespace YHCJB.HNCJB
         public int grbh; // 个人编号
 
         [JsonProperty("aac002")]
-        public string pid = ""; // 身份证号码
+        public string pid; // 身份证号码
 
         [JsonProperty("aac003")]
-        public string name = "";
+        public string name;
 
         [JsonProperty("aac006")]
         public int birthday;
 
         [JsonProperty("aac008")]
-        public string cbzt = ""; // 参保状态: "1"-正常参保 "2"-暂停参保 "4"-终止参保 "0"-未参保
+        public string cbzt; // 参保状态: "1"-正常参保 "2"-暂停参保 "4"-终止参保 "0"-未参保
 
         [JsonProperty("aac010")]
-        public string hkszd = ""; // 户口所在地
+        public string hkszd; // 户口所在地
 
         [JsonProperty("aac031")]
-        public string jfzt = ""; // 缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
+        public string jfzt; // 缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
 
         [JsonProperty("aae005")]
-        public string phone = "";
+        public string phone;
 
         [JsonProperty("aae006")]
-        public string address = "";
+        public string address;
 
         [JsonProperty("aae010")]
-        public string bankcard = "";
+        public string bankcard;
 
         [JsonProperty("aaf101")]
-        public string xzqh = ""; // 行政区划编码
+        public string xzqh; // 行政区划编码
 
         [JsonProperty("aaf102")]
-        public string czmc = ""; // 村组名称
+        public string czmc; // 村组名称
 
         [JsonProperty("aaf103")]
-        public string csmc = ""; // 村社区名称
+        public string csmc; // 村社区名称
     }
 
     // 省内参保信息查询
@@ -533,22 +523,22 @@ namespace YHCJB.HNCJB
         public string phone;
 
         [JsonProperty("aac066")]
-        public string type = ""; // 参保身份 "011":正常参保
+        public string type; // 参保身份 "011":正常参保
 
         public string rylx; // 人员类型
 
-        public string aae140 = ""; // 社保类型: "170":居保
+        public string aae140; // 社保类型: "170":居保
 
         [JsonProperty("aaf102")]
-        public string czmc = ""; // 村组名称
+        public string czmc; // 村组名称
 
         [JsonProperty("aac001")]
         public int id;
 
         [JsonProperty("aac002")]
-        public string pid = ""; // 身份证号码
+        public string pid; // 身份证号码
 
-        public string aaa129 = ""; // 社保经办机构
+        public string aaa129; // 社保经办机构
 
         [JsonProperty("aae016")]
         public string shzt; // 审核状态: "0":未审核, "1":审核通过, "2":审核不通过
@@ -560,9 +550,9 @@ namespace YHCJB.HNCJB
         public string aae171;
 
         [JsonProperty("aac031")]
-        public string jfzt = ""; // 缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
+        public string jfzt; // 缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
 
         [JsonProperty("aac010")]
-        public string hkszd = ""; // 户口所在地
+        public string hkszd; // 户口所在地
     }
 }
