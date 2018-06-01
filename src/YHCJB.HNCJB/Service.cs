@@ -494,4 +494,75 @@ namespace YHCJB.HNCJB
         [JsonProperty("aaf103")]
         public string csmc = ""; // 村社区名称
     }
+
+    // 省内参保信息查询
+    public class SncbxxQuery : CustomService
+    {
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        public SncbxxQuery(string pid) : base("executeSncbxxConQ")
+        {
+            this.pid = pid;
+        }
+    }
+
+    public class Sncbxx
+    {
+        [JsonProperty("aac004")]
+        public string sex; // "1":男, "2":女
+
+        [JsonProperty("aac003")]
+        public string name;
+
+        [JsonProperty("aac006")]
+        public int birthday;
+
+        [JsonProperty("aac005")]
+        public string nation; // 民族
+
+        public string aae410, aac008;
+
+        [JsonProperty("aac009")]
+        public string household; // 户籍 "10":城市, "20":农村
+
+        [JsonProperty("aae006")]
+        public string address;
+
+        [JsonProperty("aae005")]
+        public string phone;
+
+        [JsonProperty("aac066")]
+        public string type = ""; // 参保身份 "011":正常参保
+
+        public string rylx; // 人员类型
+
+        public string aae140 = ""; // 社保类型: "170":居保
+
+        [JsonProperty("aaf102")]
+        public string czmc = ""; // 村组名称
+
+        [JsonProperty("aac001")]
+        public int id;
+
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        public string aaa129 = ""; // 社保经办机构
+
+        [JsonProperty("aae016")]
+        public string shzt; // 审核状态: "0":未审核, "1":审核通过, "2":审核不通过
+
+        public string aae014, aae011; // 经办人或最后经办人
+
+        public string aae036; // 经办时间
+
+        public string aae171;
+
+        [JsonProperty("aac031")]
+        public string jfzt = ""; // 缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
+
+        [JsonProperty("aac010")]
+        public string hkszd = ""; // 户口所在地
+    }
 }
