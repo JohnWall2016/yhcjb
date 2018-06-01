@@ -26,13 +26,13 @@ namespace YHCJB.HNCJB
             this.@params = obj;
         }
 
-        public Service(string serviceid) :
-            this(serviceid, new Hashtable())
+        public Service(string serviceid)
+            : this(serviceid, new Hashtable())
         {
         }
 
-        public Service(IService serv) :
-            this(serv.Id, serv)
+        public Service(IService serv)
+            : this(serv.Id, serv)
         {
         }
 
