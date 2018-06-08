@@ -420,7 +420,6 @@ namespace YHCJB.HNCJB
                         default:
                             return "其他终止缴费人员";
                     }
-                    break;
                 case "1": //参保缴费
                     switch (cbzt)
                     {
@@ -429,7 +428,6 @@ namespace YHCJB.HNCJB
                         default:
                             return "其他参保缴费人员";
                     }
-                    break;
                 case "2": //暂停缴费
                     switch (cbzt)
                     {
@@ -438,7 +436,6 @@ namespace YHCJB.HNCJB
                         default:
                             return "其他暂停缴费人员";
                     }
-                    break;
                 default:
                     return "其他未知类型人员";
             }
