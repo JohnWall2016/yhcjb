@@ -10,7 +10,45 @@ namespace YHCJB.Cmd.ExcelUpdate
     {
         static void Main(string[] args)
         {
-            var wbook = new HSSFWorkbook(new FileStream(args[0], FileMode.Open));
+            Qcsq(args[0]);
+        }
+
+        static void Qcsq(string xlsFile)
+        {
+            var wbook = new HSSFWorkbook(new FileStream(xlsFile, FileMode.Open));
+            var sheet = (HSSFSheet)wbook.GetSheetAt(0);
+            
+            Session.Using((session) =>
+            {
+                for (var i = 0; i <= sheet.LastRowNum; i++)
+                {
+                    var pid = sheet.Cell(i, 0).StringCellValue;
+                    /*session.Send(new GrinfoQuery(pid));
+                    var rs = session.Get<Result<Grinfo>>();*/
+                    session.Send(new SncbxxQuery(pid));
+                    var rs = session.Get<Result<Sncbxx>>();
+                    var txt = "";
+                    if (rs.datas.Length > 0)
+                        txt += rs.datas[0].name + "个人账户返还结算单等相关资料";
+                    else
+                        txt = "未查到此人信息";
+                    txt.Println();
+                    if (sheet.Cell(i, 4) is null)
+                        sheet.Row(i).CreateCell(4);
+                    sheet.Cell(i, 4).SetCellValue(txt);
+                }
+            });
+
+            using (var outStream = new FileStream(Utils.FileNameAppend(xlsFile, ".upd"), FileMode.CreateNew))
+            {
+                wbook.Write(outStream);
+            }
+            wbook.Close();
+        }
+
+        static void Xjzy(string xlsFile)
+        {
+            var wbook = new HSSFWorkbook(new FileStream(xlsFile, FileMode.Open));
             var sheet = (HSSFSheet)wbook.GetSheetAt(0);
             
             Session.Using((session) =>
@@ -51,7 +89,7 @@ namespace YHCJB.Cmd.ExcelUpdate
                 }
             });
 
-            using (var outStream = new FileStream(Utils.FileNameAppend(args[0], ".upd"), FileMode.CreateNew))
+            using (var outStream = new FileStream(Utils.FileNameAppend(xlsFile, ".upd"), FileMode.CreateNew))
             {
                 wbook.Write(outStream);
             }

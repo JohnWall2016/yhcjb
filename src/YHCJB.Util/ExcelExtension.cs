@@ -12,7 +12,8 @@ namespace YHCJB.Util
                 return (HSSFRow)sheet.GetRow(srcRowIdx);
             else
             {
-                sheet.ShiftRows(dstRowIdx, sheet.LastRowNum, 1, true, false);
+                if (sheet.LastRowNum >= dstRowIdx)
+                    sheet.ShiftRows(dstRowIdx, sheet.LastRowNum, 1, true, false);
                 var dstRow = (HSSFRow)sheet.CreateRow(dstRowIdx);
                 var srcRow = (HSSFRow)sheet.GetRow(srcRowIdx);
                 dstRow.Height = srcRow.Height;

@@ -401,6 +401,48 @@ namespace YHCJB.HNCJB
 
         [JsonProperty("aaf103")]
         public string csmc; // 村社区名称
+
+        public string JbztCN => GetJbztCN(cbzt, jfzt);
+
+        public static string GetJbztCN(string cbzt, string jfzt)
+        {
+            switch (jfzt)
+            {
+                case "3": //终止缴费
+                    switch (cbzt)
+                    {
+                        case "1":
+                            return "正常待遇人员";
+                        case "2":
+                            return "暂停待遇人员";
+                        case "4":
+                            return "终止参保人员";
+                        default:
+                            return "其他终止缴费人员";
+                    }
+                    break;
+                case "1": //参保缴费
+                    switch (cbzt)
+                    {
+                        case "1":
+                            return "正常缴费人员";
+                        default:
+                            return "其他参保缴费人员";
+                    }
+                    break;
+                case "2": //暂停缴费
+                    switch (cbzt)
+                    {
+                        case "2":
+                            return "暂停缴费人员";
+                        default:
+                            return "其他暂停缴费人员";
+                    }
+                    break;
+                default:
+                    return "其他未知类型人员";
+            }
+        }
     }
 
     // 省内参保信息查询
