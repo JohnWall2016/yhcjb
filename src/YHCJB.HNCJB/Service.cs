@@ -73,6 +73,20 @@ namespace YHCJB.HNCJB
         }
     }
 
+    public class RowsService<T> : CustomService
+    {
+        public ArrayList rows = new ArrayList();
+
+        public void AddRow(T save)
+        {
+            rows.Add(save);
+        }
+
+        public RowsService(string serviceid)
+            : base(serviceid)
+        {}
+    }
+
     public class Result
     {
         public int rowcount, page, pagesize;

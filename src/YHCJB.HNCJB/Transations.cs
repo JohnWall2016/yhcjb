@@ -512,4 +512,135 @@ namespace YHCJB.HNCJB
         [JsonProperty("aac010")]
         public string hkszd; // 户口所在地
     }
+
+    /************ 缴费参数设置 **********/
+
+    /// <summary>
+    ///   征缴规则
+    /// </summary>
+    public class Zjgz
+    {
+        [JsonProperty("aaa044")]
+        public string name;
+
+        [JsonProperty("aac066")]
+        public string sflx; // 身份类型
+
+        [JsonProperty("aac009")]
+        public string hklx; // 户口类型
+
+        [JsonProperty("aae174")]
+        public string jfdc; // 缴费档次
+
+        [JsonProperty("aae041")]
+        public string ksrq; // 开始日期
+
+        [JsonProperty("aae042")]
+        public string jsrq; // 结束日期
+    }
+
+    /// <summary>
+    ///   保存征缴规则
+    /// </summary>
+    public class SaveZjgz : CustomService
+    {
+        public Zjgz form_main = new Zjgz();
+
+        public SaveZjgz(string name, string sflx,
+                        string hklx, string jfdc,
+                        string ksrq, string jsrq)
+        : base("executeSaveZjgz")
+        {
+            form_main = new Zjgz
+            {
+                name = name,
+                sflx = sflx,
+                hklx = hklx,
+                jfdc = jfdc,
+                ksrq = ksrq,
+                jsrq = jsrq
+            };
+        }
+    }
+
+    /// <summary>
+    ///   征缴规则查询
+    /// </summary>
+    public class ZjgzQuery : PageService
+    {
+        [JsonProperty("aac009")]
+        public string hklx; // 户口类型
+
+        [JsonProperty("aac066")]
+        public string sflx; // 身份类型
+
+        [JsonProperty("aae174")]
+        public string jfdc; // 缴费档次
+
+        [JsonProperty("aae003")]
+        public string jfnd = "2018"; // 缴费年度
+
+        public ZjgzQuery() : base("executeZjgzQuery") {}
+    }
+
+    /// <summary>
+    ///   征缴规则明细
+    /// </summary>
+    public class Zjgzmx : Zjgz
+    {
+        [JsonProperty("aae041")]
+        public new int ksrq; // 开始日期
+
+        [JsonProperty("aae042")]
+        public new int jsrq; // 结束日期
+
+        public int aaz289;
+
+        public string Id => $"{aaz289:00000000}";
+
+        static string ToYearMonth(int date)
+        {
+            int year = date / 10000;
+            int month = (date % 10000) / 100;
+            return $"{year:0000}-{month:00}";
+        }
+
+        public string Ksrq => ToYearMonth(ksrq);
+
+        public string Jsrq => ToYearMonth(jsrq);
+    }
+
+    /// <summary>
+    ///   征缴规则参数
+    /// </summary>
+    public class Zjgzcs
+    {
+        [JsonProperty("aae341")]
+        public string tcxm; // 统筹项目: "1"-个缴, "3"-省补贴
+                            //           "4"-市补贴, "5"-县补贴
+                            //           "11"-政府代缴
+
+        [JsonProperty("aaa041")]
+        public string jfbz; // 缴费标准
+
+        [JsonProperty("aae380")]
+        public string btlx; // 补贴类型: "1"-补贴, ""-非补贴
+
+        [JsonProperty("aae041")]
+        public string ksny; // 开始年月
+
+        [JsonProperty("aae042")]
+        public string zzny; // 终止年月
+    }
+
+    /// <summary>
+    ///   保存征缴规则参数
+    /// </summary>
+    public class SaveZjgzcs : RowsService<Zjgzcs>
+    {
+        [JsonProperty("aaz289")]
+        public string id = "";
+
+        public SaveZjgzcs() : base("executeSaveZjgzcs") {}
+    }
 }
