@@ -328,8 +328,87 @@ void updateJbzt(string inXls = @"D:\残疾特困\201806清理数据\特殊参保
     inWorkbook.Close();
 }
 
+
+void saveJfsz(string inXls, int begRow = 1, int endRow = 14)
+{
+    var inWorkbook = new HSSFWorkbook(new FileStream(inXls, FileMode.Open));
+    var inSheet = inWorkbook.GetSheetAt(0);
+
+    Session.Using(session =>
+    {
+        for (var idx = begRow; idx <= endRow; idx++)
+        {
+            var name = inSheet.Cell(idx, 1).StringCellValue;
+            var sflx = inSheet.Cell(idx, 2).StringCellValue;
+            var hklx = inSheet.Cell(idx, 3).StringCellValue;
+            var jfdc = inSheet.Cell(idx, 4).StringCellValue;
+            var ksrq = inSheet.Cell(idx, 5).StringCellValue;
+            var jsrq = inSheet.Cell(idx, 6).StringCellValue;
+
+            // 保存征缴规则
+            var saveZjgz = new SaveZjgz(name, sflx, hklx, jfdc, ksrq, jsrq);
+            Console.WriteLine((string)new Service(saveZjgz));
+            session.Send(saveZjgz);
+            var res = session.Get<Result>();
+            Console.WriteLine(res.message);
+
+            // 获得以上规则的ID
+            var zjgzq = new ZjgzQuery
+            {
+                hklx = hklx,
+                sflx = sflx,
+                jfdc = jfdc,
+                jfnd = ksrq.Substring(0, 4)
+            };
+            Console.WriteLine((string)new Service(zjgzq));
+            session.Send(zjgzq);
+            var resmx = session.Get<Result<Zjgzmx>>();
+            if (resmx.datas.Length > 0)
+            {
+                var zjgzmx = resmx.datas[0];
+                Console.WriteLine($"{zjgzmx.Id}");
+
+                var gjf = inSheet.Cell(idx, 7).StringCellValue;
+                var sbt = inSheet.Cell(idx, 8).StringCellValue;
+                var cbt = inSheet.Cell(idx, 9).StringCellValue;
+                var xbt = inSheet.Cell(idx, 10).StringCellValue;
+                var zdj = inSheet.Cell(idx, 11).StringCellValue;
+
+                var zjgzcs_create = Zjgzcs.Create(zjgzmx.Ksrq, zjgzmx.Jsrq);
+                var gjfcs = zjgzcs_create("1", gjf, "");
+                var sbtcs = zjgzcs_create("3", sbt, "1");
+                var cbtcs = zjgzcs_create("4", cbt, "1");
+                var xbtcs = zjgzcs_create("5", xbt, "1");
+                var zdjcs = zjgzcs_create("11", zdj, "1");
+
+                var saveZjgzcs = new SaveZjgzcs{ id = zjgzmx.Id };
+                saveZjgzcs.AddRow(gjfcs);
+                saveZjgzcs.AddRow(sbtcs);
+                saveZjgzcs.AddRow(cbtcs);
+                saveZjgzcs.AddRow(xbtcs);
+                saveZjgzcs.AddRow(zdjcs);
+
+                Console.WriteLine((string)new Service(saveZjgzcs));
+                session.Send(saveZjgzcs);
+                var res1 = session.Get<Result>();
+                Console.WriteLine(res1.message);
+            }
+        }
+    });
+
+    inWorkbook.Close();
+}
+
 //purifyFpData();
 //purifyTkData();
 //purifyDbData();
 //emergeData();
-updateJbzt();
+//updateJbzt();
+
+//saveJfsz(@"D:\残疾特困\参数设置\贫困人口一级.xls");
+//saveJfsz(@"D:\残疾特困\参数设置\贫困人口一级（城市）.xls");
+//saveJfsz(@"D:\残疾特困\参数设置\低保对象一级（城市）.xls");
+//saveJfsz(@"D:\残疾特困\参数设置\低保对象一级（农村）.xls");
+//saveJfsz(@"D:\残疾特困\参数设置\低保对象二级（农村）.xls");
+//saveJfsz(@"D:\残疾特困\参数设置\低保对象二级（城市）.xls");
+//saveJfsz(@"D:\残疾特困\参数设置\普通参保人员（农村）.xls");

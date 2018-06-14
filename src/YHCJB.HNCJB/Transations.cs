@@ -631,6 +631,27 @@ namespace YHCJB.HNCJB
 
         [JsonProperty("aae042")]
         public string zzny; // 终止年月
+
+        public delegate Zjgzcs CreateZjgzcs(string tcxm,
+                                            string jfbz,
+                                            string btlx);
+
+        public static CreateZjgzcs Create(string ksny, string zzny)
+        {
+            return delegate(string tcxm,
+                            string jfbz,
+                            string btlx)
+            {
+                return new Zjgzcs
+                {
+                    tcxm = tcxm,
+                    jfbz = jfbz,
+                    btlx = btlx,
+                    ksny = ksny,
+                    zzny = zzny
+                };
+            };
+        }
     }
 
     /// <summary>

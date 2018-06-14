@@ -1,4 +1,5 @@
 using System.Collections;
+using Newtonsoft.Json;
 using YHCJB.Util;
 
 namespace YHCJB.HNCJB
@@ -40,6 +41,7 @@ namespace YHCJB.HNCJB
     
     public class CustomService : IService
     {
+        [JsonIgnore]
         public string Id { get; }
         
         public CustomService(string serviceid)
