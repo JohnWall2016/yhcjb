@@ -5,13 +5,7 @@ VisualStudioVersion = 15.0.26124.0
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{6BEDDBD8-EF11-4F63-B6C9-47BE74996B7E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YHCJB.Certification.Data", "src\YHCJB.Certification.Data\YHCJB.Certification.Data.csproj", "{B1BA7065-1083-4993-87E4-EDFFEC65A344}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YHCJB.Cmd.Cbsh", "src\YHCJB.Cmd.Cbsh\YHCJB.Cmd.Cbsh.csproj", "{6DD54A3A-4D6E-4FBD-A825-0034B467E7D7}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "pkg", "pkg", "{746D65F4-F6F6-41CE-8927-97260D0037BB}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NPOI", "pkg\NPOI\NPOI.csproj", "{57246B51-103D-41B9-91EC-84958816128F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

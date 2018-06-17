@@ -1,5 +1,0 @@
-<Project>
-	<PropertyGroup>
-		<LinqToDBT4TemplatesDirectory>$(MSBuildThisFileDirectory)..\contentFiles\any\any\LinqToDB.Templates\</LinqToDBT4TemplatesDirectory>
-	</PropertyGroup>
-</Project>
