@@ -10,7 +10,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\pkg\linq2db\Source\LinqToDB\LinqToDB.csproj" />
+    <ProjectReference Include="..\..\pkg\LinqToDB\LinqToDB.csproj" />
   </ItemGroup>
 
 </Project>
