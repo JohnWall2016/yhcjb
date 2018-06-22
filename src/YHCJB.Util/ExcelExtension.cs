@@ -12,7 +12,7 @@ namespace YHCJB.Util
         {
             XLS, XLSX, AUTO
         }
-        
+
         public static IWorkbook LoadExcel(string fileName, ExcelType type = ExcelType.AUTO)
         {
             Stream stream = new MemoryStream();
@@ -43,7 +43,7 @@ namespace YHCJB.Util
             using (var stream = new FileStream(fileName, FileMode.CreateNew))
                 wb.Write(stream);
         }
-        
+
         public static IRow GetOrCopyRowFrom(this ISheet sheet, int dstRowIdx, int srcRowIdx)
         {
             if (dstRowIdx <= srcRowIdx)

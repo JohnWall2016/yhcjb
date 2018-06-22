@@ -332,7 +332,6 @@ void updateJbzt(string inXls = @"D:\残疾特困\201806清理数据\特殊参保
     inWorkbook.Close();
 }
 
-
 void saveJfsz(string inXls, int begRow = 1, int endRow = 14)
 {
     var inWorkbook = new HSSFWorkbook(new FileStream(inXls, FileMode.Open));
