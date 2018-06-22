@@ -1,21 +1,59 @@
 using System;
+using System.IO;
 using NPOI.HSSF.UserModel;
+using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 
 namespace YHCJB.Util
 {
     public static class ExcelExtension
     {
-        public static HSSFRow GetOrCopyRowFrom(this HSSFSheet sheet, int dstRowIdx, int srcRowIdx)
+        public enum ExcelType
+        {
+            XLS, XLSX, AUTO
+        }
+        
+        public static IWorkbook LoadExcel(string fileName, ExcelType type = ExcelType.AUTO)
+        {
+            Stream stream = new MemoryStream();
+            using (var file = new FileStream(fileName, FileMode.Open, FileAccess.Read))
+            {
+                file.CopyTo(stream);
+                stream.Seek(0, SeekOrigin.Begin);
+            }
+            if (type == ExcelType.AUTO)
+            {
+                var ext = Path.GetExtension(fileName).ToLower();
+                type = ext.Equals(".xls") ? ExcelType.XLS :
+                    ext.Equals(".xlsx") ? ExcelType.XLSX :
+                    throw new ArgumentException("Unknown excel type");
+            }
+            switch (type)
+            {
+                case ExcelType.XLS:
+                    return new HSSFWorkbook(stream);
+                case ExcelType.XLSX:
+                    return new XSSFWorkbook(stream);
+            }
+            throw new ArgumentException("Unknown excel type");
+        }
+
+        public static void Save(this IWorkbook wb, string fileName)
+        {
+            using (var stream = new FileStream(fileName, FileMode.CreateNew))
+                wb.Write(stream);
+        }
+        
+        public static IRow GetOrCopyRowFrom(this ISheet sheet, int dstRowIdx, int srcRowIdx)
         {
             if (dstRowIdx <= srcRowIdx)
-                return (HSSFRow)sheet.GetRow(srcRowIdx);
+                return sheet.GetRow(srcRowIdx);
             else
             {
                 if (sheet.LastRowNum >= dstRowIdx)
                     sheet.ShiftRows(dstRowIdx, sheet.LastRowNum, 1, true, false);
-                var dstRow = (HSSFRow)sheet.CreateRow(dstRowIdx);
-                var srcRow = (HSSFRow)sheet.GetRow(srcRowIdx);
+                var dstRow = sheet.CreateRow(dstRowIdx);
+                var srcRow = sheet.GetRow(srcRowIdx);
                 dstRow.Height = srcRow.Height;
                 for (var idx = (int)srcRow.FirstCellNum; idx < srcRow.PhysicalNumberOfCells; idx++)
                 {
@@ -29,13 +67,13 @@ namespace YHCJB.Util
             }
         }
 
-        public static void CopyRowsFrom(this HSSFSheet sheet, int start, int count, int srcRowIdx)
+        public static void CopyRowsFrom(this ISheet sheet, int start, int count, int srcRowIdx)
         {
             sheet.ShiftRows(start, sheet.LastRowNum, count, true, false);
-            var srcRow = (HSSFRow)sheet.GetRow(srcRowIdx);
+            var srcRow = sheet.GetRow(srcRowIdx);
             for (var i = 0; i < count; i++)
             {
-                var dstRow = (HSSFRow)sheet.CreateRow(start + i);
+                var dstRow = sheet.CreateRow(start + i);
                 dstRow.Height = srcRow.Height;
                 for (var idx = (int)srcRow.FirstCellNum; idx < srcRow.PhysicalNumberOfCells; idx++)
                 {
@@ -48,13 +86,13 @@ namespace YHCJB.Util
             }
         }
 
-        public static void DuplicateRows(this HSSFSheet sheet, int rowIdx, int count)
+        public static void DuplicateRows(this ISheet sheet, int rowIdx, int count)
         {
             sheet.ShiftRows(rowIdx + 1, sheet.LastRowNum, count - 1, true, false);
-            var srcRow = (HSSFRow)sheet.GetRow(rowIdx);
+            var srcRow = sheet.GetRow(rowIdx);
             for (var i = 1; i < count; i++)
             {
-                var dstRow = (HSSFRow)sheet.CreateRow(rowIdx + i);
+                var dstRow = sheet.CreateRow(rowIdx + i);
                 dstRow.Height = srcRow.Height;
                 for (var idx = (int)srcRow.FirstCellNum; idx < srcRow.PhysicalNumberOfCells; idx++)
                 {

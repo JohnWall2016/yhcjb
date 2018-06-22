@@ -2,6 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\pkg\NPOI\NPOI.csproj" />
+    <ProjectReference Include="..\..\pkg\NPOI.OOXML\NPOI.OOXML.csproj" />
   </ItemGroup>
 
   <ItemGroup>

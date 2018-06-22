@@ -1,12 +1,16 @@
 #! "netcoreapp2.0"
 #r "../pkg/NPOI/bin/Debug/netstandard2.0/NPOI.dll"
+#r "nuget: SharpZipLib, 1.0.0-alpha2"
+#r "../pkg/NPOI.OOXML/bin/Debug/netstandard2.0/NPOI.OOXML.dll"
 #r "../src/YHCJB.HNCJB/bin/Debug/netstandard2.0/YHCJB.HNCJB.dll"
 #r "../src/YHCJB.Util/bin/Debug/netstandard2.0/YHCJB.Util.dll"
 
 using NPOI.HSSF.UserModel;
+using NPOI.XSSF.UserModel;
 using NPOI.SS.UserModel;
 using YHCJB.Util;
 using YHCJB.HNCJB;
+using System.Text.RegularExpressions;
 
 void resetTitle(ISheet sheet, string type)
 {
@@ -399,6 +403,71 @@ void saveJfsz(string inXls, int begRow = 1, int endRow = 14)
     inWorkbook.Close();
 }
 
+void unionCjdz(string fromDir = @"D:\残疾特困\201806清理数据\残疾人员地址",
+               string toXlsx = @"D:\残疾特困\201806清理数据\残疾人员地址汇总.xlsx")
+{
+    IWorkbook toWorkbook = ExcelExtension.LoadExcel(toXlsx);
+    var toSheet = toWorkbook.GetSheetAt(0);
+    var count = 1;
+    foreach(var f in Directory.EnumerateFiles(fromDir))
+    {
+        var dw = Path.GetFileNameWithoutExtension(f);
+        Console.WriteLine("合并: {1} - {0}", Path.GetFileName(f), dw);
+
+        var inWorkbook = ExcelExtension.LoadExcel(f);
+        var inSheet = inWorkbook.GetSheetAt(0);
+        for (var i = 1; i <= inSheet.LastRowNum; i++)
+        {
+            var toRow = toSheet.GetOrCopyRowFrom(count, 1);
+            toRow.Cell(0).SetValue(count);
+            //Console.WriteLine(inSheet.Cell(i, 1).NumericCellValue);
+            toRow.Cell(1).SetValue(inSheet.Cell(i, 1).NumericCellValue);
+            toRow.Cell(2).SetValue(inSheet.Cell(i, 2).StringCellValue);
+            toRow.Cell(3).SetValue(inSheet.Cell(i, 3).StringCellValue);
+                
+            toRow.Cell(4).SetValue(inSheet.Cell(i, 7).StringCellValue);
+            toRow.Cell(5).SetValue(inSheet.Cell(i, 8).StringCellValue);
+            toRow.Cell(6).SetValue(inSheet.Cell(i, 9)?.StringCellValue ?? "");
+
+            toRow.Cell(7).SetValue(dw);
+
+            count += 1;
+        }
+        inWorkbook.Close();    
+    }
+
+    toWorkbook.Save(Utils.FileNameAppend(toXlsx, ".new"));
+    toWorkbook.Close();
+}
+
+void updateDZ(string inXls = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况.xls",
+               string outXls = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况.new2.xls")
+{
+    var inWorkbook = ExcelExtension.LoadExcel(inXls);
+    var inSheet = inWorkbook.GetSheetAt(0);
+
+    for (var idx = 2; idx <= inSheet.LastRowNum; idx++)
+    {
+        // 合并地址
+        for(var col = 13; col <= 16; col++)
+        {
+            var addr = inSheet.Cell(idx, col)?.StringCellValue;
+            if (addr != null && addr != "")
+            {
+                var match = Regex.Match(addr, @"(.*-.*?(村|社区))");
+                if (match.Length > 0)
+                    addr = match.Groups[1].Value;
+                addr.Println();
+                inSheet.Row(idx).CreateCell(12).SetValue(addr);
+                break;
+            }
+        }
+    }
+    
+    inWorkbook.Save(outXls);
+    inWorkbook.Close();
+}
+
 //purifyFpData();
 //purifyTkData();
 //purifyDbData();
@@ -412,3 +481,6 @@ void saveJfsz(string inXls, int begRow = 1, int endRow = 14)
 //saveJfsz(@"D:\残疾特困\参数设置\低保对象二级（农村）.xls");
 //saveJfsz(@"D:\残疾特困\参数设置\低保对象二级（城市）.xls");
 //saveJfsz(@"D:\残疾特困\参数设置\普通参保人员（农村）.xls");
+
+//unionCjdz();
+updateDZ();
