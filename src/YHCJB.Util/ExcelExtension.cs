@@ -114,6 +114,18 @@ namespace YHCJB.Util
         public static void SetValue(this ICell cell, string value) => cell.SetCellValue(value);
 
         public static void SetValue(this ICell cell, double value) => cell.SetCellValue(value);
+
+        public static string CellValue(this ICell cell)
+        {
+            try
+            {
+                return cell.StringCellValue;
+            }
+            catch (InvalidOperationException ex)
+            {
+                return cell.NumericCellValue.ToString();
+            }
+        }
     }
 }
 
