@@ -664,4 +664,48 @@ namespace YHCJB.HNCJB
 
         public SaveZjgzcs() : base("executeSaveZjgzcs") {}
     }
+
+    /// <summary>
+    ///   省内参保情况查询-个人缴费信息
+    /// </summary>
+    public class SncbqkcxjfxxQ : PageService
+    {
+        [JsonProperty("aac002")]
+        public string pid;
+
+        public SncbqkcxjfxxQ() : base("executeSncbqkcxjfxxQ") {}
+    }
+
+    /// <summary>
+    ///   省内参保情况查询-个人缴费信息明细
+    /// </summary>
+    public class Sncbqkcxjfxxmx
+    {
+        [JsonProperty("aae003")]
+        public int jfnd; //缴费年度
+
+        [JsonProperty("aae013")]
+        public string memo; //备注
+
+        [JsonProperty("aae022")]
+        public double jfje; //缴费金额
+
+        [JsonProperty("aaa115")]
+        public string jflx; //缴费类型 或 "合计"
+
+        [JsonProperty("aab033")]
+        public string jffs; //缴费方式
+
+        [JsonProperty("aae341")]
+        public string jfxm; //缴费项目
+
+        [JsonProperty("aaa027")]
+        public string sbjg; //社保机构
+
+        [JsonProperty("aae006")]
+        public string hbrq; //划拨日期
+
+        [JsonProperty("aaf101")]
+        public string xzqh; //行政区划代码
+    }
 }

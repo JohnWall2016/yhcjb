@@ -7,6 +7,7 @@
 
 using YHCJB.Util;
 using NPOI.SS.UserModel;
+using YHCJB.HNCJB;
 
 void unionJhdata(string fromDir = @"D:\数据核查\历年疑似死亡名册2018",
                string toXlsx = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\业务系统中疑似死亡待遇暂停人员街道上报死亡时间汇总.xls")
@@ -68,5 +69,30 @@ void updateZtyy(string inXls = @"D:\数据核查\雨湖区2012到2016年历年�
     inWorkbook.Close();
 }
 
+void queryJfqk(string xlsx = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\雨湖区2012到2016年历年暂停停人员名册表（疑似死亡）.xlsx")
+{
+    var workbook = ExcelExtension.LoadExcel(xlsx);
+    var sheet = workbook.GetSheetAt(0);
+
+    Session.Using(session =>
+    {
+        for (var i = 2; i <= sheet.LastRowNum; i++)
+        {
+            var pid = sheet.Cell(i, 2).StringCellValue;
+            session.Send(new SncbqkcxjfxxQ { pid = pid });
+            var jfxx = session.Get<Result<Sncbqkcxjfxxmx>>();
+            var hasJf = "否";
+            if (jfxx.datas.Length > 1)
+                hasJf = "是";
+            $"{pid} {hasJf}".Println();
+            sheet.Row(i).CreateCell(10).SetValue(hasJf);
+        }
+    });
+
+    workbook.Save(Utils.FileNameAppend(xlsx, ".new"));
+    workbook.Close();
+}
+
 //unionJhdata();
-updateZtyy();
+//updateZtyy();
+queryJfqk();
