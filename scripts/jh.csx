@@ -7,7 +7,9 @@
 
 using YHCJB.Util;
 using NPOI.SS.UserModel;
+using NPOI.SS.Util;
 using YHCJB.HNCJB;
+using System.Text.RegularExpressions;
 
 void unionJhdata(string fromDir = @"D:\数据核查\历年疑似死亡名册2018",
                string toXlsx = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\业务系统中疑似死亡待遇暂停人员街道上报死亡时间汇总.xls")
@@ -93,6 +95,89 @@ void queryJfqk(string xlsx = @"D:\数据核查\雨湖区2012到2016年历年暂�
     workbook.Close();
 }
 
+string[] dwPatterns = {
+    "湘潭市雨湖区((.*?乡)(.*?社区))",
+    "湘潭市雨湖区((.*?乡)(.*?村))",
+    "湘潭市雨湖区((.*?乡)(.*?政府机关))",
+    "湘潭市雨湖区((.*?街道)办事处(.*?社区))",
+    "湘潭市雨湖区((.*?街道)办事处(.*?政府机关))",
+    "湘潭市雨湖区((.*?镇)(.*?社区))",
+    "湘潭市雨湖区((.*?镇)(.*?居委会))",
+    "湘潭市雨湖区((.*?镇)(.*?村))",
+    "湘潭市雨湖区((.*?街道)办事处(.*?村))",
+    "湘潭市雨湖区((.*?镇)(.*?政府机关))",
+};
+
+void dispatchJhmc(string inExcel = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\疑似死亡\雨湖区居保历年疑似死亡暂停人员名册（有缴费记录）.xlsx",
+                  string tmplExcel = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\疑似死亡\乡镇街下发模板.xlsx",
+                  string outDir = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\疑似死亡\下发乡镇疑似死亡数据",
+                  string appendName = "（有缴费记录）")
+{
+    var dataMap = new Dictionary<string, List<int>>();
+    var inWorkbook = ExcelExtension.LoadExcel(inExcel);
+    var inSheet = inWorkbook.GetSheetAt(0);
+    for (var i = 2; i < inSheet.LastRowNum; i++)
+    {
+        var region = inSheet.Cell(i, 1).StringCellValue;
+        foreach (var pattern in dwPatterns)
+        {
+            var match = Regex.Match(region, pattern);
+            if (match.Length > 0)
+            {
+                var dw = match.Groups[2].Value;
+                if (!dataMap.ContainsKey(dw))
+                    dataMap[dw] = new List<int>{i};
+                else
+                    dataMap[dw].Add(i);
+            }
+        }
+    }
+    foreach (var dw in dataMap.Keys)
+    {
+        Console.WriteLine("{0}: [{1}]", dw, dataMap[dw].JoinToString());
+        var outWorkbook = ExcelExtension.LoadExcel(tmplExcel);
+        var outSheet = outWorkbook.GetSheetAt(0);
+
+        outSheet.Cell(0, 0).SetValue(Path.GetFileNameWithoutExtension(inExcel));
+        outSheet.Cell(1, 0).SetValue("单位名称："+dw);
+
+        var skipRows = 3;
+        var index = 1;
+        foreach (var i in dataMap[dw])
+        {
+            var row = outSheet.GetOrCopyRowFrom(skipRows + index - 1, skipRows);
+            row.Cell(0).SetValue(index);
+            row.Cell(1).SetValue(inSheet.Cell(i, 1).StringCellValue);
+            row.Cell(2).SetValue(inSheet.Cell(i, 2).StringCellValue);
+            row.Cell(3).SetValue(inSheet.Cell(i, 3).StringCellValue);
+            row.Cell(4).SetValue(inSheet.Cell(i, 4).StringCellValue);
+            row.Cell(5).SetValue(inSheet.Cell(i, 5).NumericCellValue);
+            row.Cell(6).SetValue(inSheet.Cell(i, 6).StringCellValue);
+            index += 1;
+        }
+        var helper = outSheet.GetDataValidationHelper();
+        if (dataMap[dw].Count > 1)
+            foreach (var dataValidation in outSheet.GetDataValidations())
+            {
+                var regions = new CellRangeAddressList();
+                foreach (var cr in dataValidation.Regions.CellRangeAddresses)
+                {
+                    regions.AddCellRangeAddress(cr.FirstRow+1, cr.FirstColumn, skipRows + index - 2, cr.LastColumn);
+                }
+                var vd = helper.CreateValidation(dataValidation.ValidationConstraint, regions);
+                vd.ShowPromptBox = true;
+                vd.ShowErrorBox = true;
+                outSheet.AddValidationData(vd);
+            }
+        outWorkbook.Save(Path.Combine(outDir, dw+appendName+Path.GetExtension(tmplExcel)));
+        outWorkbook.Close();
+        //break;
+    }
+
+    inWorkbook.Close();
+}
+
 //unionJhdata();
 //updateZtyy();
-queryJfqk();
+//queryJfqk();
+dispatchJhmc();
