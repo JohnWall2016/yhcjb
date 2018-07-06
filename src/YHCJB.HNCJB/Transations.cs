@@ -708,4 +708,269 @@ namespace YHCJB.HNCJB
         [JsonProperty("aaf101")]
         public string xzqh; //行政区划代码
     }
+
+    public class DyzzPerInfo
+    {
+        [JsonProperty("aac001")]
+        public string id;
+
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        [JsonProperty("aac003")]
+        public string name;
+
+        [JsonProperty("aac004")]
+        public string sex; // "1":男, "2":女
+
+        [JsonProperty("aac006")]
+        public string birthday;
+
+        [JsonProperty("aac008")]
+        public string cbzt = ""; // 参保状态: "1"-正常参保 "2"-暂停参保 "4"-终止参保 "0"-未参保
+
+        [JsonProperty("aac009")]
+        public string household = ""; // 户籍
+
+        [JsonProperty("aac010")]
+        public string hkszd; // 户口所在地
+
+        [JsonProperty("aae006")]
+        public string address;
+
+        [JsonProperty("aae141")]
+        public string ztny; // 暂停年月
+
+        public string aaz159;
+
+        public string zztime;
+    }
+
+    public class DyzzPerInfoQuery : CustomService
+    {
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        public DyzzPerInfoQuery(string pid) : base("dyzzPerInfo")
+        {
+            this.pid = pid;
+        }
+    }
+
+    public class DyzzBankInfo
+    {
+        public int aaz003;
+
+        [JsonProperty("aae133")]
+        public string lqrxm; // 领取人姓名
+
+        [JsonProperty("aae136")]
+        public string lqrsfzh; // 领取人身份证号
+
+        [JsonProperty("aae010")]
+        public string yhzh; // 银行帐号
+
+        [JsonProperty("aae009")]
+        public string yhhm; // 银行户名
+
+        [JsonProperty("aaz065")]
+        public string khh; // 开户行
+
+        public string bie020, bie021, bie022, bie023;
+    }
+
+    public class DyzzBankInfoQuery : CustomService
+    {
+        [JsonProperty("aac001")]
+        public string id; // 个人系统ID
+
+        public DyzzBankInfoQuery(string id) : base("dyzzBankInfo")
+        {
+            this.id = id;
+        }
+    }
+
+    public class DyzzAccrualProMx
+    {
+        [JsonProperty("aae417")]
+        public string zzqylx; // 终止前养老金
+
+        [JsonProperty("aae418")]
+        public string ktzhje; // 可退账户金额
+
+        [JsonProperty("aae419")]
+        public string grjfbf; // 个人缴费部分
+
+        [JsonProperty("aae420")]
+        public string ylqys; // 已领取月数
+
+        [JsonProperty("aae421")]
+        public string bfzje; // 补发总金额
+
+        [JsonProperty("aae422")]
+        public string dbfkje; // 多拨付款总额
+
+        [JsonProperty("aae423")]
+        public string szj; // 丧葬金
+
+        [JsonProperty("aae424")]
+        public string dkje; // 抵扣金额
+
+        [JsonProperty("aae425")]
+        public string tkzje; // 退款总金额
+
+        [JsonProperty("aae426")]
+        public string qfzje; // 欠费总金额 总是为0
+
+        [JsonProperty("aae427")]
+        public string yjhje; // 应稽核金额
+    }
+
+    public class DyzzAccrualPro : CustomService
+    {
+        [JsonProperty("aae160")]
+        public string zzyy; // 终止原因: 1407
+
+        [JsonProperty("aac001")]
+        public string id;
+
+        [JsonProperty("aic301")]
+        public string zzrq; // 终止日期: 2018-07
+
+        [JsonProperty("sf")]
+        public string sfyszf; // 是否有丧葬费: 1-是 2-否
+
+        public DyzzAccrualPro() : base("dyzzAccrualPro")
+        {
+        }
+    }
+
+    public class DyzzPerSave : CustomService
+    {
+        [JsonProperty("aae465")]
+        public string sfbrlq = "1"; // ? 1-本人领取
+
+        [JsonProperty("aac001")]
+        public string id;
+
+        [JsonProperty("aic301")]
+        public string zzrq; // 终止日期: 2018-07
+
+        [JsonProperty("sf")]
+        public string sfyszf; // 是否有丧葬费: 1-是 2-否
+
+        [JsonProperty("aae160")]
+        public string zzyy; // 终止原因: 1407
+
+        [JsonProperty("aae013")]
+        public string bz; // 备注
+
+        public class DyzzData
+        {
+            [JsonProperty("aae009")]
+            public string yhhm; // 银行户名
+
+            [JsonProperty("aae133")]
+            public string lqrxm; // 领取人姓名
+
+            [JsonProperty("aae136")]
+            public string lqrsfzh; // 领取人身份证号
+
+            [JsonProperty("aae010")]
+            public string yhzh; // 银行帐号
+
+            [JsonProperty("aaz065_t")]
+            public string khh; // 开户行 "ZG"..
+
+            [JsonProperty("aae019")]
+            public string dyje; // 待遇金额 "0"
+
+            public string aaz003;
+        }
+
+        public DyzzData dyzz_data;
+
+        public class DyzzTre
+        {
+            [JsonProperty("aae417")]
+            public string zzqylx; // 终止前养老金
+
+            [JsonProperty("aae418")]
+            public string ktzhje; // 可退账户金额
+
+            [JsonProperty("aae419")]
+            public string grjfbf; // 个人缴费部分
+
+            [JsonProperty("aae420")]
+            public string ylqys; // 已领取月数
+
+            [JsonProperty("aae421")]
+            public string bfzje; // 补发总金额
+
+            [JsonProperty("aae422")]
+            public string dbfkje; // 多拨付款总额
+
+            [JsonProperty("aae426")]
+            public string qfzje; // 欠费总金额 总是为0
+        }
+
+        public DyzzTre dyzz_tre;
+
+        public class DyzzPay
+        {
+            [JsonProperty("aae423")]
+            public string szj; // 丧葬金
+
+            [JsonProperty("aae424")]
+            public string dkje; // 抵扣金额
+
+            [JsonProperty("aae425")]
+            public string tkzje; // 退款总金额
+
+            [JsonProperty("aae427")]
+            public string yjhje; // 应稽核金额
+        }
+
+        public DyzzPay dyzz_pay;
+
+        public DyzzPerSave(DyzzAccrualPro ap, DyzzBankInfo bi,
+                           DyzzAccrualProMx apmx, string bz = "") : base("dyzzPerSave")
+        {
+            this.id = ap.id;
+            this.zzrq = ap.zzrq;
+            this.sfyszf = ap.sfyszf;
+            this.zzyy = ap.zzyy;
+            this.bz = bz;
+
+            this.dyzz_data = new DyzzData
+            {
+                yhhm = bi.yhhm,
+                lqrxm = bi.lqrxm,
+                lqrsfzh = bi.lqrsfzh,
+                yhzh = bi.yhzh,
+                khh = bi.khh,
+                dyje = apmx.tkzje,
+                aaz003 = $"{bi.aaz003}",
+            };
+
+            this.dyzz_tre = new DyzzTre
+            {
+                zzqylx = apmx.zzqylx,
+                ktzhje = apmx.tkzje,
+                grjfbf = apmx.grjfbf,
+                ylqys = apmx.ylqys,
+                bfzje = apmx.bfzje,
+                dbfkje = apmx.dbfkje,
+                qfzje = apmx.qfzje,
+            };
+
+            this.dyzz_pay = new DyzzPay
+            {
+                szj = apmx.szj,
+                dkje = apmx.dkje,
+                tkzje = apmx.tkzje,
+                yjhje = apmx.yjhje,
+            };
+        }
+    }
 }
