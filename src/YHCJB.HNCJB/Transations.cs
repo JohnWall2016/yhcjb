@@ -933,43 +933,43 @@ namespace YHCJB.HNCJB
 
         public DyzzPay dyzz_pay;
 
-        public DyzzPerSave(DyzzAccrualPro ap, DyzzBankInfo bi,
+        public DyzzPerSave(DyzzBankInfo bi, DyzzAccrualPro ap,
                            DyzzAccrualProMx apmx, string bz = "") : base("dyzzPerSave")
         {
-            this.id = ap.id;
-            this.zzrq = ap.zzrq;
-            this.sfyszf = ap.sfyszf;
-            this.zzyy = ap.zzyy;
-            this.bz = bz;
+            this.id = ap.id ?? "";
+            this.zzrq = ap.zzrq ?? "";
+            this.sfyszf = ap.sfyszf ?? "";
+            this.zzyy = ap.zzyy ?? "";
+            this.bz = bz ?? "";
 
             this.dyzz_data = new DyzzData
             {
-                yhhm = bi.yhhm,
-                lqrxm = bi.lqrxm,
-                lqrsfzh = bi.lqrsfzh,
-                yhzh = bi.yhzh,
-                khh = bi.khh,
-                dyje = apmx.tkzje,
+                yhhm = bi.yhhm ?? "",
+                lqrxm = bi.lqrxm ?? "",
+                lqrsfzh = bi.lqrsfzh ?? "",
+                yhzh = bi.yhzh ?? "",
+                khh = bi.khh ?? "",
+                dyje = apmx.tkzje ?? "",
                 aaz003 = $"{bi.aaz003}",
             };
 
             this.dyzz_tre = new DyzzTre
             {
-                zzqylx = apmx.zzqylx,
-                ktzhje = apmx.tkzje,
-                grjfbf = apmx.grjfbf,
-                ylqys = apmx.ylqys,
-                bfzje = apmx.bfzje,
-                dbfkje = apmx.dbfkje,
-                qfzje = apmx.qfzje,
+                zzqylx = apmx.zzqylx ?? "",
+                ktzhje = apmx.tkzje ?? "",
+                grjfbf = apmx.grjfbf ?? "",
+                ylqys = apmx.ylqys ?? "",
+                bfzje = apmx.bfzje ?? "",
+                dbfkje = apmx.dbfkje ?? "",
+                qfzje = apmx.qfzje ?? "",
             };
 
             this.dyzz_pay = new DyzzPay
             {
-                szj = apmx.szj,
-                dkje = apmx.dkje,
-                tkzje = apmx.tkzje,
-                yjhje = apmx.yjhje,
+                szj = apmx.szj ?? "",
+                dkje = apmx.dkje ?? "",
+                tkzje = apmx.tkzje ?? "",
+                yjhje = apmx.yjhje ?? "",
             };
         }
     }

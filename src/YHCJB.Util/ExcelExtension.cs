@@ -121,7 +121,7 @@ namespace YHCJB.Util
             {
                 return cell.StringCellValue;
             }
-            catch (InvalidOperationException ex)
+            catch (InvalidOperationException)
             {
                 return cell.NumericCellValue.ToString();
             }

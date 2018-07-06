@@ -15,9 +15,22 @@ namespace YHCJB.Util
             return JsonConvert.SerializeObject(obj);
         }
 
-        public static TO FromJson<TO>(string json)
+        public static TResult FromJson<TResult>(string json)
         {
-            return JsonConvert.DeserializeObject<TO>(json);
+            return JsonConvert.DeserializeObject<TResult>(json);
         }        
+    }
+
+    public static class JsonExtension
+    {
+        public static string ToJson(object obj)
+        {
+            return JsonConvert.SerializeObject(obj);
+        }
+
+        public static T FromJson<T>(string json)
+        {
+            return JsonConvert.DeserializeObject<T>(json);
+        }
     }
 }

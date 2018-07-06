@@ -177,7 +177,102 @@ void dispatchJhmc(string inExcel = @"D:\数据核查\雨湖区2012到2016年历�
     inWorkbook.Close();
 }
 
+void dyztryzz(string xls, string bz, string zzyy = "1407")
+{
+    var workbook = ExcelExtension.LoadExcel(xls);
+    var sheet = workbook.GetSheetAt(0);
+    
+    Session.Using(session =>
+    {
+        for (var i = 2; i <= sheet.LastRowNum; i++)
+        {
+            var pid = sheet.Cell(i, 3).StringCellValue;
+            var name = sheet.Cell(i, 4).StringCellValue;
+            var reason = sheet.Cell(i, 7).StringCellValue;
+            var dykssj = sheet.Cell(i, 13).StringCellValue;
+
+            Console.Write($"{i}:{pid}|{name}|{reason}|{dykssj}|");
+
+            var memo = "";
+            if (reason == "职保正常待遇")
+            {
+                if (int.TryParse("201201", out int izzsj))
+                {
+                    izzsj = DateTimeExtension.PrevMonth(izzsj);
+                    var zzsj = $"{izzsj / 100:000}-{izzsj % 100:00}";
+
+                    Console.Write($"{zzsj}|");
+            
+                    session.Send(new DyzzPerInfoQuery(pid));
+                    var pinfo = session.Get<Result<DyzzPerInfo>>();
+                    Console.WriteLine("\n" + JsonExtension.ToJson(pinfo));
+
+                    // TODO: pinfo.type 校验是否终止或其它情况
+
+                    if (pinfo.datas.Length > 0)
+                    {
+                        var id = pinfo.datas[0].id;
+                        
+                        DyzzBankInfo bkinfo = new DyzzBankInfo();
+                        session.Send(new DyzzBankInfoQuery(id));
+                        var binfos = session.Get<Result<DyzzBankInfo>>();
+                        Console.WriteLine("\n" + JsonExtension.ToJson(binfos));
+                        
+                        // TODO: when 0
+                        if (binfos.datas.Length > 0)
+                        {
+                            bkinfo = binfos.datas[0];
+                        }
+
+                        var apro = new DyzzAccrualPro
+                        {
+                            zzyy = zzyy,
+                            id = id,
+                            zzrq = zzsj,
+                            sfyszf = "2",
+                        };
+                        session.Send(apro);
+                        var apromxs = session.Get<Result<DyzzAccrualProMx>>();
+                        Console.WriteLine("\n" + JsonExtension.ToJson(apromxs));
+                        
+                        if (apromxs.datas.Length > 0)
+                        {
+                            var apromx = apromxs.datas[0];
+
+                            //TEST: session.Send(new DyzzPerSave(bkinfo, apro, apromx, bz));
+                            memo = "TEST";
+                            Console.WriteLine(new Service(new DyzzPerSave(bkinfo, apro, apromx, bz)));
+                            //var result = session.Get<Result>();
+                            //if (result.type == "info" && result.message == "")
+                            //    memo = "待遇终止成功";
+                            //else
+                            //    memo = result.message;
+                        }
+                        else
+                        {
+                            memo = "无法获取终止信息";
+                        }
+                    }
+                    else
+                    {
+                        memo = "未找到个人信息";
+                    }
+                }
+                else
+                {
+                    memo = "待遇开始日期格式有误";
+                }
+            }
+            Console.WriteLine(memo);
+            sheet.Row(i).CreateCell(15).SetValue(memo);
+        }
+    });
+
+    workbook.Save(Utils.FileNameAppend(xls, ".new"));
+    workbook.Close();
+}
+
 //unionJhdata();
 //updateZtyy();
 //queryJfqk();
-dispatchJhmc();
+//dispatchJhmc();
