@@ -177,102 +177,169 @@ void dispatchJhmc(string inExcel = @"D:\数据核查\雨湖区2012到2016年历�
     inWorkbook.Close();
 }
 
-void dyztryzz(string xls, string bz, string zzyy = "1407")
+void dyztryzz(string xls = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\雨湖区2012到2016年历年暂停停人员名册表（职保待遇）.xlsx",
+              string bz = "职保退休暂停待遇人员", string zzyy = "1407")
 {
     var workbook = ExcelExtension.LoadExcel(xls);
     var sheet = workbook.GetSheetAt(0);
-    
-    Session.Using(session =>
+
+    try
     {
-        for (var i = 2; i <= sheet.LastRowNum; i++)
+        Session.Using(session =>
         {
-            var pid = sheet.Cell(i, 3).StringCellValue;
-            var name = sheet.Cell(i, 4).StringCellValue;
-            var reason = sheet.Cell(i, 7).StringCellValue;
-            var dykssj = sheet.Cell(i, 13).StringCellValue;
-
-            Console.Write($"{i}:{pid}|{name}|{reason}|{dykssj}|");
-
-            var memo = "";
-            if (reason == "职保正常待遇")
+            for (var i = 2; i <= 477; i++)
             {
-                if (int.TryParse("201201", out int izzsj))
+                var pid = sheet.Cell(i, 3).StringCellValue;
+                var name = sheet.Cell(i, 4).StringCellValue;
+                var reason = sheet.Cell(i, 7).StringCellValue;
+                var dykssj = sheet.Cell(i, 13).StringCellValue;
+
+                Console.Write($"{i}:{pid}|{name}|{reason}|{dykssj}|");
+
+                var memo = "";
+                var (dbfkje, ktzhje, dkje, yjhje, tkzje) = ("", "", "", "", "");
+                if (reason == "职保正常待遇")
                 {
-                    izzsj = DateTimeExtension.PrevMonth(izzsj);
-                    var zzsj = $"{izzsj / 100:000}-{izzsj % 100:00}";
-
-                    Console.Write($"{zzsj}|");
-            
-                    session.Send(new DyzzPerInfoQuery(pid));
-                    var pinfo = session.Get<Result<DyzzPerInfo>>();
-                    Console.WriteLine("\n" + JsonExtension.ToJson(pinfo));
-
-                    // TODO: pinfo.type 校验是否终止或其它情况
-
-                    if (pinfo.datas.Length > 0)
+                    if (int.TryParse(dykssj, out int izzsj))
                     {
-                        var id = pinfo.datas[0].id;
-                        
-                        DyzzBankInfo bkinfo = new DyzzBankInfo();
-                        session.Send(new DyzzBankInfoQuery(id));
-                        var binfos = session.Get<Result<DyzzBankInfo>>();
-                        Console.WriteLine("\n" + JsonExtension.ToJson(binfos));
-                        
-                        // TODO: when 0
-                        if (binfos.datas.Length > 0)
+                        izzsj = DateTimeExtension.PrevMonth(izzsj);
+                        var zzsj = $"{izzsj / 100:000}-{izzsj % 100:00}";
+
+                        Console.Write($"{zzsj}|");
+            
+                        session.Send(new DyzzPerInfoQuery(pid));
+                        var pinfo = session.Get<Result<DyzzPerInfo>>();
+                        //Console.WriteLine("\n" + JsonExtension.ToJson(pinfo));
+
+                        if (pinfo.type == "warn" && pinfo.message != "")
                         {
-                            bkinfo = binfos.datas[0];
+                            memo = pinfo.message;
                         }
-
-                        var apro = new DyzzAccrualPro
+                        else if (pinfo.datas.Length > 0)
                         {
-                            zzyy = zzyy,
-                            id = id,
-                            zzrq = zzsj,
-                            sfyszf = "2",
-                        };
-                        session.Send(apro);
-                        var apromxs = session.Get<Result<DyzzAccrualProMx>>();
-                        Console.WriteLine("\n" + JsonExtension.ToJson(apromxs));
+                            var id = pinfo.datas[0].id;
                         
-                        if (apromxs.datas.Length > 0)
-                        {
-                            var apromx = apromxs.datas[0];
+                            DyzzBankInfo bkinfo = null;
+                            session.Send(new DyzzBankInfoQuery(id));
+                            var binfos = session.Get<Result<DyzzBankInfo>>();
+                            //Console.WriteLine("\n" + JsonExtension.ToJson(binfos));
+                        
+                            if (binfos.datas.Length > 0)
+                            {
+                                bkinfo = binfos.datas[0];
+                            }
 
-                            //TEST: session.Send(new DyzzPerSave(bkinfo, apro, apromx, bz));
-                            memo = "TEST";
-                            Console.WriteLine(new Service(new DyzzPerSave(bkinfo, apro, apromx, bz)));
-                            //var result = session.Get<Result>();
-                            //if (result.type == "info" && result.message == "")
-                            //    memo = "待遇终止成功";
-                            //else
-                            //    memo = result.message;
+                            var apro = new DyzzAccrualPro
+                            {
+                                zzyy = zzyy,
+                                id = id,
+                                zzrq = zzsj,
+                                sfyszf = "2",
+                            };
+                            session.Send(apro);
+                            var apromxs = session.Get<Result<DyzzAccrualProMx>>();
+                            //Console.WriteLine("\n" + JsonExtension.ToJson(apromxs));
+                        
+                            if (apromxs.datas.Length > 0)
+                            {
+                                var apromx = apromxs.datas[0];
+                            
+                                (dbfkje, ktzhje, dkje, yjhje, tkzje) = (apromx.dbfkje, apromx.ktzhje, apromx.dkje, apromx.yjhje, apromx.tkzje);
+                                Console.Write($"{dbfkje}|{ktzhje}|{dkje}|{yjhje}|{tkzje}|");
+                            
+                                if (apromx.tkzje != "0" && bkinfo == null)
+                                {
+                                    //memo = "退款金额不等于0";
+                                    memo = "无可退款账户";
+                                }
+                                else
+                                {
+                                    if (bkinfo == null) bkinfo = new DyzzBankInfo();
+                                    session.Send(new DyzzPerSave(bkinfo, apro, apromx, bz));
+                                    //memo = "TEST";
+                                    //Console.WriteLine(new Service(new DyzzPerSave(bkinfo, apro, apromx, bz)));
+                                    var result = session.Get<Result>();
+                                    if (result.type == "info" && result.message == "")
+                                        memo = "待遇终止成功";
+                                    else
+                                        memo = result.message;
+                                }
+                            }
+                            else
+                            {
+                                memo = "无法获取终止信息";
+                            }
                         }
                         else
                         {
-                            memo = "无法获取终止信息";
+                            memo = "未找到个人信息";
                         }
                     }
                     else
                     {
-                        memo = "未找到个人信息";
+                        memo = "待遇开始日期格式有误";
                     }
                 }
-                else
-                {
-                    memo = "待遇开始日期格式有误";
-                }
+                sheet.Row(i).CreateCell(15).SetValue(dbfkje);
+                sheet.Row(i).CreateCell(16).SetValue(ktzhje);
+                sheet.Row(i).CreateCell(17).SetValue(dkje);
+                sheet.Row(i).CreateCell(18).SetValue(yjhje);
+                sheet.Row(i).CreateCell(19).SetValue(tkzje);
+                sheet.Row(i).CreateCell(20).SetValue(memo);
+                Console.WriteLine(memo);
             }
-            Console.WriteLine(memo);
-            sheet.Row(i).CreateCell(15).SetValue(memo);
-        }
-    });
+        });
+    }
+    finally
+    {
+        workbook.Save(Utils.FileNameAppend(xls, ".new"));
+        workbook.Close();   
+    }
+}
 
-    workbook.Save(Utils.FileNameAppend(xls, ".new"));
-    workbook.Close();
+void unionWjfjl()(string fromDir = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\修改后-历年暂停上报表",
+                  string endwith = "（无缴费记录）"
+                  string toXlsx = @"D:\数据核查\雨湖区2012到2016年历年暂停停人员名册表\雨湖区居保历年疑似死亡暂停人员街道汇总名册（无缴费记录）.xlsx")
+{
+    IWorkbook toWorkbook = ExcelExtension.LoadExcel(toXlsx);
+    var toSheet = toWorkbook.GetSheetAt(0);
+    var count = 1;
+    
+    foreach(var f in Directory.EnumerateFiles(fromDir))
+    {
+        var dw = Path.GetFileNameWithoutExtension(f);
+        if (!dw.EndsWith(endwith))
+            continue;
+        Console.WriteLine("合并: {1} - {0}", Path.GetFileName(f), dw);
+
+        var inWorkbook = ExcelExtension.LoadExcel(f);
+        var inSheet = inWorkbook.GetSheetAt(0);
+        for (var i = 1; i <= inSheet.LastRowNum; i++)
+        {
+            var toRow = toSheet.GetOrCopyRowFrom(count, 1);
+            toRow.Cell(0).SetValue(count);
+            toRow.Cell(1).SetValue(dw);
+            toRow.Cell(2).SetValue(inSheet.Cell(i, 0).StringCellValue);
+            toRow.Cell(3).SetValue(inSheet.Cell(i, 1).StringCellValue);
+            toRow.Cell(4).SetValue(inSheet.Cell(i, 2).StringCellValue);
+            toRow.Cell(5).SetValue(inSheet.Cell(i, 3).StringCellValue);
+            toRow.Cell(6).SetValue(inSheet.Cell(i, 4).CellValue());
+            toRow.Cell(7).SetValue(inSheet.Cell(i, 5).StringCellValue);
+            toRow.Cell(8).SetValue(inSheet.Cell(i, 6)?.StringCellValue ?? "");
+            toRow.Cell(9).SetValue(inSheet.Cell(i, 7).CellValue());
+            
+            count += 1;
+        }
+        inWorkbook.Close();    
+    }
+
+    toWorkbook.Save(Utils.FileNameAppend(toXlsx, ".new"));
+    toWorkbook.Close();
 }
 
 //unionJhdata();
 //updateZtyy();
 //queryJfqk();
 //dispatchJhmc();
+//dyztryzz();
+

@@ -793,7 +793,7 @@ namespace YHCJB.HNCJB
     public class DyzzAccrualProMx
     {
         [JsonProperty("aae417")]
-        public string zzqylx; // 终止前养老金
+        public string zzqylj; // 终止前养老金
 
         [JsonProperty("aae418")]
         public string ktzhje; // 可退账户金额
@@ -893,7 +893,7 @@ namespace YHCJB.HNCJB
         public class DyzzTre
         {
             [JsonProperty("aae417")]
-            public string zzqylx; // 终止前养老金
+            public string zzqylj; // 终止前养老金
 
             [JsonProperty("aae418")]
             public string ktzhje; // 可退账户金额
@@ -953,10 +953,14 @@ namespace YHCJB.HNCJB
                 aaz003 = $"{bi.aaz003}",
             };
 
+            var ylj = apmx.zzqylj ?? "";
+            if (ylj.EndsWith(".0"))
+                ylj = ylj.Substring(0, ylj.Length - 2);
+            
             this.dyzz_tre = new DyzzTre
             {
-                zzqylx = apmx.zzqylx ?? "",
-                ktzhje = apmx.tkzje ?? "",
+                zzqylj = ylj,
+                ktzhje = apmx.ktzhje ?? "",
                 grjfbf = apmx.grjfbf ?? "",
                 ylqys = apmx.ylqys ?? "",
                 bfzje = apmx.bfzje ?? "",
