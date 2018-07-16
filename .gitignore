@@ -3,3 +3,4 @@ data/
 [Oo]bj/
 *_internal.cs
 *.log
+*.nlog
