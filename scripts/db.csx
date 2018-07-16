@@ -59,7 +59,7 @@ IEnumerable<IConnectionStringSettings> ConnectionStrings()
         ConnectionString = "server=127.0.0.1;port=3306;database=TEST;uid=root;pwd=root;charset=utf8;"
     };
 }
-            
+
 DataConnection.SetConnectionStrings(ConnectionStrings());
 
 using (var db = new DbTest())
@@ -74,5 +74,3 @@ using (var db = new DbTest())
         Console.WriteLine($"{p.Name} {p.ID}");
     }
 }
-
-
