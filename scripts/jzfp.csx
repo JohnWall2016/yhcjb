@@ -402,8 +402,8 @@ void saveJfsz(string inXls, int begRow = 1, int endRow = 14)
     inWorkbook.Close();
 }
 
-void unionCjdz(string fromDir = @"D:\残疾特困\201806清理数据\残疾人员地址",
-               string toXlsx = @"D:\残疾特困\201806清理数据\残疾人员地址汇总.xlsx")
+void unionCjdz(string fromDir = @"D:\残疾特困\201806清理数据\残疾人员地址2",
+               string toXlsx = @"D:\残疾特困\201806清理数据\残疾人员地址汇总2.xlsx")
 {
     IWorkbook toWorkbook = ExcelExtension.LoadExcel(toXlsx);
     var toSheet = toWorkbook.GetSheetAt(0);
@@ -439,8 +439,8 @@ void unionCjdz(string fromDir = @"D:\残疾特困\201806清理数据\残疾人�
     toWorkbook.Close();
 }
 
-void updateDZ(string inXls = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况.xls",
-               string outXls = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况.new2.xls")
+void updateDZ(string inXls = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况.new2.xls",
+               string outXls = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况.new3.xls")
 {
     var inWorkbook = ExcelExtension.LoadExcel(inXls);
     var inSheet = inWorkbook.GetSheetAt(0);
@@ -448,7 +448,7 @@ void updateDZ(string inXls = @"D:\残疾特困\201806清理数据\特殊参保�
     for (var idx = 2; idx <= inSheet.LastRowNum; idx++)
     {
         // 合并地址
-        for(var col = 13; col <= 16; col++)
+        for(var col = 13; col <= 17; col++)
         {
             var addr = inSheet.Cell(idx, col)?.StringCellValue;
             if (addr != null && addr != "")
@@ -482,4 +482,4 @@ void updateDZ(string inXls = @"D:\残疾特困\201806清理数据\特殊参保�
 //saveJfsz(@"D:\残疾特困\参数设置\普通参保人员（农村）.xls");
 
 //unionCjdz();
-//updateDZ();
+updateDZ();
