@@ -117,13 +117,19 @@ namespace YHCJB.Util
 
         public static string CellValue(this ICell cell)
         {
-            try
+            //Console.WriteLine(cell.CellType);
+            switch (cell.CellType)
             {
-                return cell.StringCellValue;
-            }
-            catch (InvalidOperationException)
-            {
-                return cell.NumericCellValue.ToString();
+                case CellType.String:
+                    return cell.StringCellValue;
+                case CellType.Numeric:
+                    return cell.NumericCellValue.ToString();
+                case CellType.Blank:
+                    return "";
+                case CellType.Boolean:
+                    return cell.BooleanCellValue.ToString();
+                default:
+                    throw new InvalidOperationException();
             }
         }
     }
