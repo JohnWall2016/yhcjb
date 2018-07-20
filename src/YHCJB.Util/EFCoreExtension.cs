@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Data;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
@@ -63,14 +64,13 @@ namespace YHCJB.Util
             var loadCVS = $@"load data infile '{fileName}' into table `{tableName}` CHARACTER SET utf8 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\'' LINES TERMINATED BY '\n';";
             //Console.WriteLine(loadCVS);
 
-            using (var connection = db.GetDbConnection())
-            {
+            var connection = db.GetDbConnection();
+            if (connection.State == ConnectionState.Closed)
                 connection.Open();
-                using (var command = connection.CreateCommand())
-                {
-                    command.CommandText = loadCVS;
-                    command.ExecuteNonQuery();
-                }
+            using (var command = connection.CreateCommand())
+            {
+                command.CommandText = loadCVS;
+                command.ExecuteNonQuery();
             }
         }
 
