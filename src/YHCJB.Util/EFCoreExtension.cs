@@ -27,8 +27,9 @@ namespace YHCJB.Util
         static List<FieldMapping> GetFieldMappings<TFields>(string[] titleColumns)
         {
             var fieldMappings = new List<FieldMapping>();
-    
+
             var type = typeof(TFields);
+            var titleMatched = false;
             foreach (var pi in type.GetProperties())
             {
                 var fieldMapping = new FieldMapping();
@@ -42,6 +43,7 @@ namespace YHCJB.Util
                     if (titleColumns[i] == fieldMapping.Name)
                     {
                         fieldMapping.Column = i;
+                        titleMatched = true;
                         break;
                     }
                 }
@@ -49,7 +51,10 @@ namespace YHCJB.Util
                 fieldMappings.Add(fieldMapping);
             }
 
-            return fieldMappings;
+            if (titleMatched)
+                return fieldMappings;
+            else
+                return null;
         }
 
         public static void MySqlLoadInFile(this DatabaseFacade db, string fileName, string tableName)
@@ -78,7 +83,9 @@ namespace YHCJB.Util
             {
                 var sheet = wb.GetSheetAt(sheetIndex);
                 var titles = sheet.GetRow(titleRow).Cells.Select(cell => cell.CellValue());
+
                 var fieldMappings = GetFieldMappings<T>(titles.ToArray());
+                if (fieldMappings == null) return;
 
                 var tmpFileName = Path.GetTempFileName();
             
