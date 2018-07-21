@@ -140,4 +140,4 @@ void updateJbzt(string excel = @"D:\残疾特困\201806清理数据\特殊参保
 }
 
 //initJZFPDatabase();
-updateJbzt();
+//updateJbzt();

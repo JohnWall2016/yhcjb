@@ -4,3 +4,4 @@ data/
 *_internal.cs
 *.log
 *.nlog
+.vscode

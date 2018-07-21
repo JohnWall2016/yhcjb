@@ -48,7 +48,7 @@ async Task CbdjshLoop(CancellationToken token, TimeSpan delay)
     }
     catch (Exception ex)
     {
-        logger.Error("批量审核出错", ex);
+        logger.Error(ex, "批量审核出错");
     }
 }
 
