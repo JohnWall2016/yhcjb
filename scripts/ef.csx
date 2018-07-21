@@ -36,7 +36,7 @@ public class TSCBRY
     public string Rdsf { get; set; }
 
     [Column("对应系统中身份")]
-    public string Xtsf  { get; set; }
+    public string Xtsf { get; set; }
 
     [Column("对应系统中身份编码")]
     public string Sfbm { get; set; }
@@ -117,8 +117,8 @@ void updateJbzt(string excel = @"D:\残疾特困\201806清理数据\特殊参保
             var sfzhm = sheet.Cell(i, 2).StringCellValue;
 
             var jbxx = from lsry in context.LSCBRYs
-                where lsry.Sfzhm == sfzhm
-                select new { lsry.Xm, lsry.Sfzhm, lsry.Cbsf, lsry.Cbzt, lsry.Jfzt };
+                       where lsry.Sfzhm == sfzhm
+                       select new { lsry.Xm, lsry.Sfzhm, lsry.Cbsf, lsry.Cbzt, lsry.Jfzt };
 
             var jbzt = "";
             var jbxm = "";
