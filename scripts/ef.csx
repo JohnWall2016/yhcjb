@@ -13,7 +13,6 @@ using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using YHCJB.Util;
 using YHCJB.HNCJB;
 
-
 [Table("2018年特殊参保人员分类明细表")]
 public class TSCBRY
 {
