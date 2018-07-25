@@ -172,27 +172,32 @@ namespace YHCJB.HNCJB
 
         public int aaz165;
         
-        public string aaf103 = ""; // 村社区
+        public string aaf103 = ""; // 村社区名称
 
         [JsonProperty("aac001")]
         public int id;
         
         public string aae140 = ""; // 社保类型: "170":居保
         
-        public string aaf102 = ""; // 组
+        public string aaf102 = ""; // 到组名称
 
         [JsonProperty("aac002")]
         public string pid = ""; // 身份证号码
 
-        public string aaf101 = ""; // 区划编码
+        public string aaf101 = ""; // 到组编码
         
-        public string aaa129 = ""; // 县市区
+        public string aaa129 = ""; // 县市区名称
 
         public string aae016 = "";
 
         public int aaz158;
+
+        //"aae013":null,
+        //"aae014":null, 审核人审核前为空
         
         public string aae036 = ""; // 录入时间
+
+        //"aae015":null, 审核时间审核前为空
 
         public string aae011 = ""; // 录入人
 
@@ -976,5 +981,297 @@ namespace YHCJB.HNCJB
                 yjhje = apmx.yjhje ?? "",
             };
         }
+    }
+
+    public class InfoByIdcard
+    {
+        [JsonProperty("aac001")]
+        public int grbh; // 个人编号
+
+        [JsonProperty("aac002")]
+        public string pid; // 身份证号码
+
+        [JsonProperty("aac003")]
+        public string name;
+
+        [JsonProperty("aac004")]
+        public string sex = ""; // "1":男, "2":女
+
+        [JsonProperty("aac005")]
+        public string nation = ""; // 民族
+
+        [JsonProperty("aac006")]
+        public int birthday;
+
+        [JsonProperty("aac009")]
+        public string household = ""; // 户籍
+
+        [JsonProperty("aac010")]
+        public string hkszd; // 户口所在地
+
+        [JsonProperty("aae005")]
+        public string phone;
+
+        [JsonProperty("aac066")]
+        public string cbsf = ""; // 参保身份
+
+        public string aae476 = "";
+
+        [JsonProperty("aae010")]
+        public string bankcard;
+
+        public string aee011;
+
+        [JsonProperty("aac031")]
+        public string jfzt; // 缴费状态: "1"-参保缴费 "2"-暂停缴费 "3"-终止缴费
+
+        public int aaz159;
+
+        [JsonProperty("aac008")]
+        public string cbzt = ""; // 参保状态: "1"-正常参保 "2"-暂停参保 "4"-终止参保 "0"-未参保
+
+        public int aac049; // 参保年月
+
+        [JsonProperty("aaf030")]
+        public string csbm; // 村社区编码
+        
+        [JsonProperty("aaf103")]
+        public string csmc; // 村社区名称
+
+        [JsonProperty("aaz070")]
+        public string fzbm = ""; // 村社区分组编码
+
+        [JsonProperty("aaf101")]
+        public string dzbm; // 到组编码
+
+        [JsonProperty("aaf102")]
+        public string dzmc; // 到组名称
+
+        [JsonProperty("aaf031")]
+        public string xzjmc; // 乡镇街名称
+
+        [JsonProperty("aaf013")]
+        public string xzjbm = ""; // 乡镇街编码
+    }
+
+    public class InfoByIdcardQuery : CustomService
+    {
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        public InfoByIdcardQuery(string pid) : base("queryInfoByIdcardService")
+        {
+            this.pid = pid;
+        }
+    }
+
+    /// <summary>
+    ///   查询（参保）未审核信息.
+    /// </summary>
+    /// <returns>
+    ///   返回 Result 类型, type:"data", vcode: "".
+    /// </returns>
+    public class NotAuditInfoQuery : CustomService
+    {
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        public NotAuditInfoQuery(string pid) : base("queryNotAuditInfoService")
+        {
+            this.pid = pid;
+        }
+    }
+
+    public class InfoChangeItem
+    {
+        [JsonProperty("aae122")]
+        public string xgzd = ""; //修改字段
+
+        [JsonProperty("aae123")]
+        public string zdold = ""; //字段原值
+
+        [JsonProperty("aae124")]
+        public string zdnow = ""; //字段新值
+
+        [JsonProperty("aae157")]
+        public string zdbm = ""; //字段编码
+
+        [JsonProperty("aae155")]
+        public string zdmc = ""; //字段名称
+
+        public static InfoChangeItem ChangeCbsf(string zdold, string zdnow)
+        {
+            return new InfoChangeItem
+            {
+                xgzd = "AAC066",
+                zdold = zdold,
+                zdnow = zdnow,
+                zdbm = "AC20",
+                zdmc = "参保身份",
+            };
+        }
+    }
+
+    public class AddInfoChange : CustomService
+    {
+        public AddInfoChange(int grbh, string pid, string name, int aaz159, string bz = "") 
+            : base("addInformationChangeService")
+        {
+            this.grbh = grbh;
+            this.pid = pid;
+            this.bz = bz;
+            this.pidnow = pid;
+            this.pidold = pid;
+            this.aaz159 = aaz159;
+            this.namenow = name;
+            this.nameold = name;
+        }
+
+        public ArrayList array = new ArrayList();
+
+        public void AddArray(InfoChangeItem item)
+        {
+            array.Add(item);
+        }
+
+        [JsonProperty("aac001")]
+        public int grbh; // 个人编号
+
+        [JsonProperty("aac002")]
+        public string pid; // 身份证号码
+
+        [JsonProperty("aae013")]
+        public string bz; // 备注
+        
+        [JsonProperty("aac002Now")]
+        public string pidnow; // 身份证号码
+
+        [JsonProperty("aac002Old")]
+        public string pidold; // 身份证号码
+
+        public int aaz159;
+
+        [JsonProperty("aac003Now")]
+        public string namenow;
+
+        [JsonProperty("aac003Old")]
+        public string nameold;
+    }
+
+    public class InfoChangeForAudit
+    {
+        [JsonProperty("aac004")]
+        public string sex; // "1":男, "2":女
+
+        [JsonProperty("aac003")]
+        public string name;
+
+        [JsonProperty("aaf013")]
+        public string qxbm; // 区县编码
+
+        [JsonProperty("aac006")]
+        public int birthday;
+
+        [JsonProperty("aac005")]
+        public string nation; // 民族
+
+        public string aac008;
+
+        [JsonProperty("aac009")]
+        public string household; // 户籍 "10":城市, "20":农村
+
+        public int aac049; // 参保年月
+
+        [JsonProperty("aaf031")]
+        public string xzjmc; // 乡镇街名称
+
+        [JsonProperty("aae016")]
+        public string shzt; // 审核状态: "0":未审核, "1":审核通过, "2":审核不通过
+
+        [JsonProperty("aac066")]
+        public string cbsf; // 参保身份 "011":正常参保
+
+        //"aae013":null,
+
+        public string aae036; // 经办时间
+
+        //"aae015":null, 审核时间审核前为空
+
+        public string aae011 = ""; // 录入人
+
+        [JsonProperty("aaz070")]
+        public int fzbm; // 村社区分组编码
+
+        [JsonProperty("aaf103")]
+        public string csmc; // 村社区名称
+
+        [JsonProperty("aaf102")]
+        public string dzmc; // 到组名称
+
+        public int aaz163;
+
+        [JsonProperty("aac001")]
+        public int grbh;
+
+        [JsonProperty("aac002")]
+        public string pid; // 身份证号码
+
+        public AuditInfoChange ToAuditInfoChange()
+        {
+            return new AuditInfoChange
+            {
+                birthday = $"{birthday}",
+                fzbm = $"{fzbm}",
+                aaz163 = $"{aaz163}",
+                grbh = $"{grbh}",
+            };
+        }
+    }
+
+    public class InfoChangeForAuditQuery : PageService
+    {
+        public string aaf013 = "", aaf030 = "", aae016 = "0"/*未审核*/;
+        
+        [JsonProperty("aac002")]
+        public string pid = ""; // 身份证号码
+
+        [JsonProperty("aac003")]
+        public string name = "";
+
+        public string aae011 = "", aae036 = "", aae036s = "";
+        public string aae014 = "", aae015 = "", aae015s = "";
+        public string aac009 = "";
+        
+        public InfoChangeForAuditQuery(string pid, string name = "")
+            : this("queryInfoChangeForAuditService")
+        {
+            this.pid = pid;
+            this.name = name;
+        }
+
+        protected InfoChangeForAuditQuery(string serviceid) : base(serviceid)
+        {
+        }
+    }
+
+    public class AuditInfoChange : InfoChangeForAudit
+    {
+        [JsonProperty("aac006")]
+        public new string birthday;
+        
+        [JsonProperty("aaz070")]
+        public new string fzbm; // 村社区分组编码
+
+        public new string aaz163;
+
+        [JsonProperty("aac001")]
+        public new string grbh;
+
+        public string aaz206 = "";
+    }
+
+    public class AuditInfoChangePass : RowsService<AuditInfoChange>
+    {
+        public AuditInfoChangePass() : base("auditInformationChangePassService") {}
     }
 }

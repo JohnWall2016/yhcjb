@@ -75,7 +75,6 @@ public class LSCBRY
     public string Cbsj { get; set; }
 }
 
-
 public class JZFPContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
