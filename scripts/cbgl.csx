@@ -25,7 +25,7 @@ var logger = NLog.LogManager.LoadConfiguration(logsFolder).GetCurrentClassLogger
 /// <summary>
 ///   参保登记审核
 /// </summary>
-void Cbdjsh(Action<Session, string, string> additionalAction = null)
+void Cbdjsh(Action<Session, Session, string, string> additionalAction = null)
 {
     Session.Using002((session002) =>
     {
@@ -58,7 +58,7 @@ void Cbdjsh(Action<Session, string, string> additionalAction = null)
 
                 if (result.type == "info" && result.vcode == "" && additionalAction != null)
                 {
-                    additionalAction(session007, r.pid, r.name);
+                    additionalAction(session002, session007, r.pid, r.name);
                 }
             }
             //additionalAction(session007, "430321198512021767", "王冬阳");
@@ -69,7 +69,7 @@ void Cbdjsh(Action<Session, string, string> additionalAction = null)
 /// <summary>
 ///   修改个人参保身份
 /// </summary>
-void UpdateCbsf(Session session, string pid, string name)
+void UpdateCbsf(Session session002, Session session007 string pid, string name)
 {
     using (var context = new JZFPContext())
     {
@@ -93,8 +93,8 @@ void UpdateCbsf(Session session, string pid, string name)
             else
             {
                 // 查询个人信息
-                session.Send(new InfoByIdcardQuery(pid));
-                var pinfos = session.Get<Result<InfoByIdcard>>();
+                session007.Send(new InfoByIdcardQuery(pid));
+                var pinfos = session007.Get<Result<InfoByIdcard>>();
                 if (pinfos.datas.Length == 0)
                 {
                     msg = "未查到个人信息";
@@ -103,8 +103,8 @@ void UpdateCbsf(Session session, string pid, string name)
                 {
                     // 是否存在未审核数据
                     var pinfo = pinfos.datas[0];
-                    session.Send(new NotAuditInfoQuery(pid));
-                    var res = session.Get<Result>();
+                    session007.Send(new NotAuditInfoQuery(pid));
+                    var res = session007.Get<Result>();
 
                     if (res.message != "")
                     {
@@ -116,16 +116,17 @@ void UpdateCbsf(Session session, string pid, string name)
                         var addInfoChange = new AddInfoChange(pinfo.grbh,
                             pinfo.pid, pinfo.name, pinfo.aaz159);
                         addInfoChange.AddArray(InfoChangeItem.ChangeCbsf(pinfo.cbsf, grxx.Sfbm));
-                        session.Send(addInfoChange);
-                        var res = session.Get<Result>();
+                        session007.Send(addInfoChange);
+                        var res = session007.Get<Result>();
                         if (res.type != "info" || res.vcode != "") // 修改身份失败
                         {
                             msg = $"修改身份失败[{res.message}]";
                         }
                         else
                         {
-                            session.Send(new InfoChangeForAuditQuery(pinfo.pid));
-                            var infoChanges = session.Get<Result<InfoChangeForAudit>>();
+                            // 审核修改信息
+                            session002.Send(new InfoChangeForAuditQuery(pinfo.pid));
+                            var infoChanges = session002.Get<Result<InfoChangeForAudit>>();
                             if (infoChanges.datas.Length == 0)
                             {
                                 msg = $"未找到待审核数据";
@@ -134,13 +135,13 @@ void UpdateCbsf(Session session, string pid, string name)
                             {
                                 var infoChange = infoChanges.datas[0];
                                 var auditInfoChangePass = new AuditInfoChangePass();
-                                auditInfoChangePass.AddRow(infoChange.ToAuditInfoChange);
-                                session.Send(auditInfoChangePass);
-                                var res = session.Get<Result>();
+                                auditInfoChangePass.AddRow(infoChange.ToAuditInfoChange());
+                                session002.Send(auditInfoChangePass);
+                                var res = session002.Get<Result>();
                                 if (res.type == "data" && res.vcode == "")
                                     msg = $"修改身份为'{grxx.Rdsf}({grxx.Sfbm})'";
                                 else
-                                    msg = res.message;
+                                    msg = $"审核修改身份失败[{res.message}]";
                             }
                         }
                     }
