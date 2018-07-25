@@ -101,7 +101,7 @@ void UpdateCbsf(Session session002, Session session007 string pid, string name)
                 }
                 else
                 {
-                    // 是否存在未审核数据
+                    // 是否存在未审核数据 007
                     var pinfo = pinfos.datas[0];
                     session007.Send(new NotAuditInfoQuery(pid));
                     var res = session007.Get<Result>();
@@ -112,7 +112,7 @@ void UpdateCbsf(Session session002, Session session007 string pid, string name)
                     }
                     else
                     {
-                        // 修改参保身份
+                        // 修改参保身份 007
                         var addInfoChange = new AddInfoChange(pinfo.grbh,
                             pinfo.pid, pinfo.name, pinfo.aaz159);
                         addInfoChange.AddArray(InfoChangeItem.ChangeCbsf(pinfo.cbsf, grxx.Sfbm));
@@ -124,7 +124,7 @@ void UpdateCbsf(Session session002, Session session007 string pid, string name)
                         }
                         else
                         {
-                            // 审核修改信息
+                            // 审核修改信息 002
                             session002.Send(new InfoChangeForAuditQuery(pinfo.pid));
                             var infoChanges = session002.Get<Result<InfoChangeForAudit>>();
                             if (infoChanges.datas.Length == 0)
