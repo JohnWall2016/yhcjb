@@ -1082,6 +1082,7 @@ namespace YHCJB.HNCJB
         }
     }
 
+    // 执行信息变更（录入记录）
     public class InfoChangeItem
     {
         [JsonProperty("aae122")]
@@ -1112,6 +1113,7 @@ namespace YHCJB.HNCJB
         }
     }
 
+    // 执行信息变更
     public class AddInfoChange : CustomService
     {
         public AddInfoChange(int grbh, string pid, string name, int aaz159, string bz = "") 
@@ -1158,6 +1160,7 @@ namespace YHCJB.HNCJB
         public string nameold;
     }
 
+    // 查询信息变更审核（返回记录)
     public class InfoChangeForAudit
     {
         [JsonProperty("aac004")]
@@ -1208,7 +1211,8 @@ namespace YHCJB.HNCJB
         [JsonProperty("aaf102")]
         public string dzmc; // 到组名称
 
-        public int aaz163;
+        [JsonProperty("aaz163")]
+        public int infoChangeID;
 
         [JsonProperty("aac001")]
         public int grbh;
@@ -1220,14 +1224,30 @@ namespace YHCJB.HNCJB
         {
             return new AuditInfoChange
             {
+                sex = sex,
+                name = name,
+                qxbm = qxbm,
                 birthday = $"{birthday}",
+                nation = nation,
+                aac008 = aac008,
+                household = household,
+                aac049 = aac049,
+                xzjmc = xzjmc,
+                shzt = shzt,
+                cbsf = cbsf,
+                aae036 = aae036,
+                aae011 = aae011,
                 fzbm = $"{fzbm}",
-                aaz163 = $"{aaz163}",
+                csmc = csmc,
+                dzmc = dzmc,
+                infoChangeID = $"{infoChangeID}",
                 grbh = $"{grbh}",
+                pid = pid,
             };
         }
     }
 
+    // 查询信息变更审核
     public class InfoChangeForAuditQuery : PageService
     {
         public string aaf013 = "", aaf030 = "", aae016 = "0"/*未审核*/;
@@ -1254,6 +1274,38 @@ namespace YHCJB.HNCJB
         }
     }
 
+    // 查询信息变更字段（返回记录）
+    public class UpdateFieldInfo
+    {
+        [JsonProperty("aae123")]
+        public string zdold = ""; //字段原值
+
+        [JsonProperty("aae155")]
+        public string zdmc = ""; //字段名称
+
+        [JsonProperty("aae122")]
+        public string xgzd = ""; //修改字段
+
+        [JsonProperty("aae124")]
+        public string zdnow = ""; //字段新值
+
+        [JsonProperty("aaz163")]
+        public int infoChangeID;
+    }
+
+    // 查询信息变更字段
+    public class UpdateFieldInfoQuery : PageService
+    {
+        [JsonProperty("aaz163")]
+        public string infoChangeID;
+
+        public UpdateFieldInfoQuery(int infoChangeID) : base("queryUpdateFieldInfoService")
+        {
+            this.infoChangeID = $"{infoChangeID}";
+        }
+    }
+
+    // 审核信息变更（录入记录）
     public class AuditInfoChange : InfoChangeForAudit
     {
         [JsonProperty("aac006")]
@@ -1262,7 +1314,8 @@ namespace YHCJB.HNCJB
         [JsonProperty("aaz070")]
         public new string fzbm; // 村社区分组编码
 
-        public new string aaz163;
+        [JsonProperty("aaz163")]
+        public new string infoChangeID;
 
         [JsonProperty("aac001")]
         public new string grbh;
@@ -1270,8 +1323,10 @@ namespace YHCJB.HNCJB
         public string aaz206 = "";
     }
 
+    // 审核信息变更
     public class AuditInfoChangePass : RowsService<AuditInfoChange>
     {
+        public string remark = "";
         public AuditInfoChangePass() : base("auditInformationChangePassService") {}
     }
 }

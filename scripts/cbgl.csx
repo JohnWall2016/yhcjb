@@ -35,7 +35,7 @@ void Cbdjsh(Action<Session, Session, string, string> additionalAction = null)
             var res = session002.Get<Result<Cbsh>>();
             foreach (var r in res.datas)
             {
-                //if (r.pid != "430321198512021767") continue;
+                //if (r.pid != "430321198109271563") continue;
 
                 var grinfo = $"{r.name}|{r.pid}|{r.aaf102}";
                 if (r.birthday < 19510701)
@@ -61,95 +61,155 @@ void Cbdjsh(Action<Session, Session, string, string> additionalAction = null)
                     additionalAction(session002, session007, r.pid, r.name);
                 }
             }
-            //additionalAction(session007, "430321198512021767", "王冬阳");
+            //UpdateCbsf(session002, session007, "430321198109271563", "陈洪波");
         });
     });
+}
+
+class JZFPInfo
+{
+    internal string Xm, Sfzhm, Rdsf, Sfbm, Xtsf;
 }
 
 /// <summary>
 ///   修改个人参保身份
 /// </summary>
-void UpdateCbsf(Session session002, Session session007 string pid, string name)
+void UpdateCbsf(Session session002, Session session007, string pid, string name)
 {
-    using (var context = new JZFPContext())
+    bool GetJZFPInfo(out JZFPInfo info, out string msg)
     {
-        var grinfo = $"{name}|{pid}";
-        var msg = "";
+        using (var context = new JZFPContext())
+        {
+            info = null;
+            msg = "";
 
-        var tsxx = from tsry in context.TSCBRYs
-                   where tsry.Sfzhm == pid
-                   select new { tsry.Xm, tsry.Sfzhm, tsry.Rdsf, tsry.Sfbm };
-        if (!tsxx.Any())
-        {
-            msg = "未查询到特殊参保身份信息";
-        }
-        else
-        {
-            var grxx = tsxx.First();
-            if (grxx.Xm != name)
+            var tsxx = from tsry in context.TSCBRYs
+                    where tsry.Sfzhm == pid
+                    select new JZFPInfo
+                    { 
+                        Xm = tsry.Xm, 
+                        Sfzhm = tsry.Sfzhm,
+                        Rdsf = tsry.Rdsf,
+                        Sfbm = tsry.Sfbm,
+                        Xtsf = tsry.Xtsf,
+                    };
+            if (!tsxx.Any())
             {
-                msg = $"姓名不一致'{grxx.Xm}'";
+                msg = "未查询到特殊参保身份信息";
+                return false;
             }
             else
             {
-                // 查询个人信息
-                session007.Send(new InfoByIdcardQuery(pid));
-                var pinfos = session007.Get<Result<InfoByIdcard>>();
-                if (pinfos.datas.Length == 0)
+                info = tsxx.First();
+                if (info.Xm != name)
                 {
-                    msg = "未查到个人信息";
+                    msg = $"姓名不一致'{info.Xm}'";
+                    return false;
                 }
-                else
-                {
-                    // 是否存在未审核数据 007
-                    var pinfo = pinfos.datas[0];
-                    session007.Send(new NotAuditInfoQuery(pid));
-                    var res = session007.Get<Result>();
-
-                    if (res.message != "")
-                    {
-                        msg = res.message; // 存在未审核数据
-                    }
-                    else
-                    {
-                        // 修改参保身份 007
-                        var addInfoChange = new AddInfoChange(pinfo.grbh,
-                            pinfo.pid, pinfo.name, pinfo.aaz159);
-                        addInfoChange.AddArray(InfoChangeItem.ChangeCbsf(pinfo.cbsf, grxx.Sfbm));
-                        session007.Send(addInfoChange);
-                        var res = session007.Get<Result>();
-                        if (res.type != "info" || res.vcode != "") // 修改身份失败
-                        {
-                            msg = $"修改身份失败[{res.message}]";
-                        }
-                        else
-                        {
-                            // 审核修改信息 002
-                            session002.Send(new InfoChangeForAuditQuery(pinfo.pid));
-                            var infoChanges = session002.Get<Result<InfoChangeForAudit>>();
-                            if (infoChanges.datas.Length == 0)
-                            {
-                                msg = $"未找到待审核数据";
-                            }
-                            else
-                            {
-                                var infoChange = infoChanges.datas[0];
-                                var auditInfoChangePass = new AuditInfoChangePass();
-                                auditInfoChangePass.AddRow(infoChange.ToAuditInfoChange());
-                                session002.Send(auditInfoChangePass);
-                                var res = session002.Get<Result>();
-                                if (res.type == "data" && res.vcode == "")
-                                    msg = $"修改身份为'{grxx.Rdsf}({grxx.Sfbm})'";
-                                else
-                                    msg = $"审核修改身份失败[{res.message}]";
-                            }
-                        }
-                    }
-                }
+                return true;
             }
         }
-        logger.Info($"修改个人参保身份|{grinfo}|{msg}");
     }
+
+    bool AddInfoChange(JZFPInfo info, out string msg)
+    {
+        msg = "";
+        // 查询个人信息
+        session007.Send(new InfoByIdcardQuery(pid));
+        var pinfos = session007.Get<Result<InfoByIdcard>>();
+        if (pinfos.datas.Length == 0)
+        {
+            msg = "未查到个人参保信息";
+            return false;
+        }
+        else
+        {
+            // 是否存在未审核数据 007
+            var pinfo = pinfos.datas[0];
+            session007.Send(new NotAuditInfoQuery(pid));
+            var res = session007.Get<Result>();
+
+            if (res.message != "")
+            {
+                msg = $"存在未审核数据[{res.message}]"; // 存在未审核数据
+                return false;
+            }
+            else
+            {
+                // 修改参保身份 007
+                var addInfoChange = new AddInfoChange(pinfo.grbh,
+                    pinfo.pid, pinfo.name, pinfo.aaz159);
+                addInfoChange.AddArray(InfoChangeItem.ChangeCbsf(pinfo.cbsf, info.Sfbm));
+                session007.Send(addInfoChange);
+                res = session007.Get<Result>();
+                if (res.type != "info" || res.vcode != "") // 修改身份失败
+                {
+                    msg = $"修改身份失败[{res.message}]";
+                    return false;
+                }
+                return true;
+            }
+        }
+    }
+
+    bool AuditInfoChange(JZFPInfo info, out string msg)
+    {
+        session002.Send(new InfoChangeForAuditQuery(pid));
+        var infoChanges = session002.Get<Result<InfoChangeForAudit>>();
+        if (infoChanges.datas.Length == 0)
+        {
+            msg = "未找到待审核数据";
+            return false;
+        }
+        else
+        {
+            InfoChangeForAudit infoChange = null;
+            foreach (var infochange in infoChanges.datas)
+            {
+                session002.Send(new UpdateFieldInfoQuery(infochange.infoChangeID));
+                var upInfos = session002.Get<Result<UpdateFieldInfo>>();
+                if (upInfos.datas.Length != 1)
+                    continue;
+                var upinfo = upInfos.datas[0];
+                if (upinfo.zdmc == "参保身份" && upinfo.zdnow == info.Xtsf)
+                {
+                    infoChange = infochange;
+                    break;
+                }
+            }
+            if (infoChange == null)
+            {
+                msg = "无法获取待审核记录";
+                return false;
+            }
+            var auditInfoChangePass = new AuditInfoChangePass();
+            auditInfoChangePass.AddRow(infoChange.ToAuditInfoChange());
+            //Console.WriteLine(new Service(auditInfoChangePass.Id, auditInfoChangePass));
+            session002.Send(auditInfoChangePass);
+            var res = session002.Get<Result>();
+            if (res.type == "info" && res.vcode == "")
+            {
+                msg = $"修改身份为'{info.Rdsf}({info.Sfbm})'";
+                return true;
+            }
+            else
+                msg = $"审核修改身份失败[{res.message}]";
+            return false;
+        }
+    }
+
+    var grinfo = $"{name}|{pid}";
+
+    var message = "";
+    JZFPInfo jzfpInfo = null;
+
+    if (GetJZFPInfo(out jzfpInfo, out message) 
+        && AddInfoChange(jzfpInfo, out message))
+    {
+        AuditInfoChange(jzfpInfo, out message);
+    }
+
+    logger.Info($"修改个人参保身份|{grinfo}|{message}");
 }
 
 /// <summary>
@@ -203,4 +263,4 @@ void startCbdjshLoop(TimeSpan delay)
     task.GetAwaiter().GetResult(); // block;
 }
 
-startCbdjshLoop(TimeSpan.FromSeconds(5));
+startCbdjshLoop(TimeSpan.FromMinutes(5));
