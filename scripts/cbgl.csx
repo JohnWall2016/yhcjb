@@ -209,7 +209,7 @@ void UpdateCbsf(Session session002, Session session007, string pid, string name)
         AuditInfoChange(jzfpInfo, out message);
     }
 
-    logger.Info($"修改个人参保身份|{grinfo}|{message}");
+    logger.Info($"修改身份|{grinfo}|{message}");
 }
 
 /// <summary>
