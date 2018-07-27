@@ -1,9 +1,13 @@
-#! "netcoreapp2.0"
+#! "netcoreapp2.1"
 #r "../pkg/NPOI/bin/Debug/netstandard2.0/NPOI.dll"
 #r "nuget: SharpZipLib, 1.0.0-alpha2"
 #r "../pkg/NPOI.OOXML/bin/Debug/netstandard2.0/NPOI.OOXML.dll"
 #r "../src/YHCJB.HNCJB/bin/Debug/netstandard2.0/YHCJB.HNCJB.dll"
 #r "../src/YHCJB.Util/bin/Debug/netstandard2.0/YHCJB.Util.dll"
+#r "nuget: Microsoft.EntityFrameworkCore, 2.1.1"
+#r "nuget: Microsoft.EntityFrameworkCore.Relational, 2.1.1"
+#r "nuget: Pomelo.EntityFrameworkCore.MySql, 2.1.1"
+#load "fpdb.csx"
 
 using NPOI.HSSF.UserModel;
 using NPOI.XSSF.UserModel;
@@ -11,6 +15,9 @@ using NPOI.SS.UserModel;
 using YHCJB.Util;
 using YHCJB.HNCJB;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 
 void resetTitle(ISheet sheet, string type)
 {
@@ -467,6 +474,61 @@ void updateDZ(string inXls = @"D:\残疾特困\201806清理数据\特殊参保�
     inWorkbook.Close();
 }
 
+void initJZFPDatabase()
+{
+    using (var context = new JZFPContext())
+    {
+        // Console.WriteLine("创建精准扶贫数据库");
+        // context.Database.EnsureDeleted();
+        // context.Database.EnsureCreated();
+        // Console.WriteLine("导入特殊参保人员数据");
+        // context.Database.LoadExcel<TSCBRY>(
+        //     @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况20180716.xls",
+        //     beginRow: 2, endRow: 28636);
+        Console.WriteLine("导入居保历史参保人员数据");
+        context.Database.LoadExcel<LSCBRY>(@"D:\残疾特困\201806清理数据\居保历史参保人员名单20180727A.xls");
+        context.Database.LoadExcel<LSCBRY>(@"D:\残疾特困\201806清理数据\居保历史参保人员名单20180727B.xls");
+        Console.WriteLine("精准扶贫数据库创建完毕");
+    }
+}
+
+void updateFpmx(string excel = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况20180727.xls")
+{
+    var wb = ExcelExtension.LoadExcel(excel);
+    var sheet = wb.GetSheetAt(0);
+    using (var context = new JZFPContext())
+    {
+        for (var i = 2; i <= sheet.LastRowNum; i++)
+        {
+            var sfzhm = sheet.Cell(i, 2).StringCellValue;
+
+            var jbxx = from lsry in context.LSCBRYs
+                       where lsry.Sfzhm == sfzhm
+                       select new { lsry.Xm, lsry.Sfzhm, lsry.Cbsf, lsry.Cbzt, lsry.Jfzt };
+
+            var jbzt = "";
+            var jbxm = "";
+            var cbsf = "";
+            if (jbxx.Count() <= 0)
+                jbzt = "未参加居保";
+            else
+            {
+                var lsry = jbxx.First();
+                jbxm = lsry.Xm;
+                jbzt = Grinfo.GetJbztCN(lsry.Cbzt, lsry.Jfzt);
+                cbsf = lsry.Cbsf;
+            }
+            Console.WriteLine($"{i,5}: {sfzhm} {jbzt} {cbsf}");
+            sheet.Cell(i, 4).SetValue(jbzt);
+            sheet.Cell(i, 5).SetValue(jbxm);
+            sheet.Cell(i, 6).SetValue(cbsf);
+        }
+    }
+    wb.Save(Utils.FileNameAppend(excel, ".new"));
+    wb.Close();
+}
+
+
 //purifyFpData();
 //purifyTkData();
 //purifyDbData();
@@ -482,4 +544,8 @@ void updateDZ(string inXls = @"D:\残疾特困\201806清理数据\特殊参保�
 //saveJfsz(@"D:\残疾特困\参数设置\普通参保人员（农村）.xls");
 
 //unionCjdz();
-updateDZ();
+//updateDZ();
+
+//initJZFPDatabase();
+updateFpmx();
+

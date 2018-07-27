@@ -263,4 +263,4 @@ void startCbdjshLoop(TimeSpan delay)
     task.GetAwaiter().GetResult(); // block;
 }
 
-startCbdjshLoop(TimeSpan.FromMinutes(5));
+startCbdjshLoop(TimeSpan.FromMinutes(10));
