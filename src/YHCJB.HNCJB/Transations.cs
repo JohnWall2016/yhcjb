@@ -1,5 +1,7 @@
+using System;
 using Newtonsoft.Json;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace YHCJB.HNCJB
 {
@@ -1328,5 +1330,27 @@ namespace YHCJB.HNCJB
     {
         public string remark = "";
         public AuditInfoChangePass() : base("auditInformationChangePassService") {}
+    }
+
+    public static class SystemCode
+    {
+        static Dictionary<string, string> _cbsfMap = new Dictionary<string, string>()
+        {
+            {"011", "普通参保人员"},
+            {"021", "残一级"},
+            {"022", "残二级"},
+            {"031", "特困一级"},
+            {"051", "贫困人口一级"},
+            {"061", "低保对象一级"},
+            {"062", "低保对象二级"},
+        };
+        
+        public static string GetCbsfCN(string code)
+        {
+            if (_cbsfMap.TryGetValue(code, out var cn))
+                return cn;
+            else
+                throw new ApplicationException($"Unknown type '{code}'");
+        }
     }
 }

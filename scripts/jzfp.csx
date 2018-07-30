@@ -18,6 +18,7 @@ using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using System.Collections.Generic;
 
 void resetTitle(ISheet sheet, string type)
 {
@@ -529,8 +530,79 @@ void updateFpmx(string excel = @"D:\残疾特困\201806清理数据\特殊参保
     wb.Close();
 }
 
+void splitFpmx(string fpmxExcel = @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况20180730.xls",
+               string splitTmpl = @"D:\残疾特困\201806清理数据\乡镇街扶贫底册模板.xlsx",
+               string outdir = @"D:\残疾特困\201806清理数据\乡镇街扶贫底册")
+{
+    var dict = new Dictionary<string, List<int>>()
+    {
+        {"楠竹山镇", new List<int>()},
+        {"姜畲镇", new List<int>()},
+        {"鹤岭镇", new List<int>()},
+        {"长城乡", new List<int>()},
+        {"窑湾街道", new List<int>()},
+        {"雨湖路街道", new List<int>()},
+        {"云塘街道", new List<int>()},
+        {"城正街街道", new List<int>()},
+        {"广场街道", new List<int>()},
+        {"先锋街道", new List<int>()},
+        {"万楼街道", new List<int>()},
+        {"昭潭街道", new List<int>()},
+    };
 
-//purifyFpData();
+    var wb = ExcelExtension.LoadExcel(fpmxExcel);
+    var sheet = wb.GetSheetAt(0);
+
+    for (var i = 1; i <= sheet.LastRowNum; i++)
+    {
+        var ssdw = sheet.Cell(i, 19)?.CellValue() ?? "";
+        if (dict.TryGetValue(ssdw, out var list))
+            list.Add(i);
+    }
+
+    foreach (var key in dict.Keys)
+    {
+        Console.WriteLine($"{key}: {dict[key].Count}");
+        var outwb = ExcelExtension.LoadExcel(splitTmpl);
+        var outsheet = outwb.GetSheetAt(0);
+        var idx = 1;
+
+        foreach (var row in dict[key])
+        {
+            var oldidx = sheet.Cell(row, 0).CellValue();
+            var name = sheet.Cell(row, 1).CellValue();
+            var idcard = sheet.Cell(row, 2).CellValue();
+            var birthday = sheet.Cell(row, 3).CellValue();
+            var ryrdsf = sheet.Cell(row, 8).CellValue();
+            var jbzt = sheet.Cell(row, 4).CellValue();
+            var jbname = sheet.Cell(row, 5).CellValue();
+            var jbsf = sheet.Cell(row, 6).CellValue() ?? "";
+            if (jbsf != "")
+                jbsf = SystemCode.GetCbsfCN(jbsf);
+            var rydz = sheet.Cell(row, 18).CellValue();
+
+            var outrow = outsheet.GetOrCopyRowFrom(idx, 1);
+            outrow.Cell(0).SetValue(idx);
+            outrow.Cell(1).SetValue(oldidx);
+            outrow.Cell(2).SetValue(name);
+            outrow.Cell(3).SetValue(idcard);
+            outrow.Cell(4).SetValue(birthday);
+            outrow.Cell(5).SetValue(ryrdsf);
+            outrow.Cell(6).SetValue(jbzt);
+            outrow.Cell(7).SetValue(jbname);
+            outrow.Cell(8).SetValue(jbsf);
+            outrow.Cell(9).SetValue(rydz);
+
+            idx += 1;
+        }
+
+        outwb.Save(Path.Combine(outdir, key+"扶贫底册.xlsx"));
+        outwb.Close();
+    }
+    wb.Close();
+}
+
+//purifyfpdata();
 //purifyTkData();
 //purifyDbData();
 //emergeData();
@@ -548,5 +620,6 @@ void updateFpmx(string excel = @"D:\残疾特困\201806清理数据\特殊参保
 //updateDZ();
 
 //initJZFPDatabase();
-updateFpmx();
+//updateFpmx();
 
+splitFpmx();
