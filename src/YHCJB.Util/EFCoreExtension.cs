@@ -58,23 +58,37 @@ namespace YHCJB.Util
                 return null;
         }
 
-        public static void MySqlLoadInFile(this DatabaseFacade db, string fileName, string tableName)
+        public static int MySqlLoadInFile(this DatabaseFacade db, string fileName, string tableName)
         {
             fileName = new Uri(fileName).AbsolutePath;
             var loadCVS = $@"load data infile '{fileName}' into table `{tableName}` CHARACTER SET utf8 FIELDS TERMINATED BY ',' OPTIONALLY ENCLOSED BY '\'' LINES TERMINATED BY '\n';";
             //Console.WriteLine(loadCVS);
 
+            return db.ExecSql(loadCVS);
+        }
+
+        public static int ExecSql(this DatabaseFacade db, string sql)
+        {
             var connection = db.GetDbConnection();
-            if (connection.State == ConnectionState.Closed)
+            bool closed = connection.State == ConnectionState.Closed;
+            if (closed)
                 connection.Open();
-            using (var command = connection.CreateCommand())
+            try
             {
-                command.CommandText = loadCVS;
-                command.ExecuteNonQuery();
+                using (var command = connection.CreateCommand())
+                {
+                    command.CommandText = sql;
+                    return command.ExecuteNonQuery();
+                }
+            }
+            finally
+            {
+                if (closed)
+                    connection.Close();
             }
         }
 
-        public static void LoadExcel<T>(this DatabaseFacade db, string fileName, int sheetIndex = 0, int titleRow = 0, int beginRow = 1, int endRow = -1)
+        public static int LoadExcel<T>(this DatabaseFacade db, string fileName, int sheetIndex = 0, int titleRow = 0, int beginRow = 1, int endRow = -1)
         {
             if (!db.IsMySql()) throw new NotImplementedException();
 
@@ -85,7 +99,7 @@ namespace YHCJB.Util
                 var titles = sheet.GetRow(titleRow).Cells.Select(cell => cell.CellValue());
 
                 var fieldMappings = GetFieldMappings<T>(titles.ToArray());
-                if (fieldMappings == null) return;
+                if (fieldMappings == null) return 0;
 
                 var tmpFileName = Path.GetTempFileName();
             
@@ -117,7 +131,7 @@ namespace YHCJB.Util
                 var customAttrs = tableType.GetCustomAttributes(typeof(TableAttribute), false);
                 var tableName = customAttrs.Length > 0 ? (customAttrs[0] as TableAttribute).Name : tableType.Name;
                 
-                db.MySqlLoadInFile(tmpFileName, tableName);
+                return db.MySqlLoadInFile(tmpFileName, tableName);
             }
             finally
             {

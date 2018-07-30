@@ -486,8 +486,9 @@ void initJZFPDatabase()
         //     @"D:\残疾特困\201806清理数据\特殊参保人员分类明细含居保参保情况20180716.xls",
         //     beginRow: 2, endRow: 28636);
         Console.WriteLine("导入居保历史参保人员数据");
-        context.Database.LoadExcel<LSCBRY>(@"D:\残疾特困\201806清理数据\居保历史参保人员名单20180727A.xls");
-        context.Database.LoadExcel<LSCBRY>(@"D:\残疾特困\201806清理数据\居保历史参保人员名单20180727B.xls");
+        context.Database.ExecSql("delete from 2018年历史参保人员信息表;");
+        context.Database.LoadExcel<LSCBRY>(@"D:\残疾特困\201806清理数据\居保历史参保人员名单20180730A.xls");
+        context.Database.LoadExcel<LSCBRY>(@"D:\残疾特困\201806清理数据\居保历史参保人员名单20180730B.xls");
         Console.WriteLine("精准扶贫数据库创建完毕");
     }
 }
