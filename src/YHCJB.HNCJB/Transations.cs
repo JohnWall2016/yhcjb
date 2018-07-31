@@ -34,21 +34,7 @@ namespace YHCJB.HNCJB
         [JsonProperty("aac066")]
         public string dflx = "";
 
-        public static string GetDflxCN(string dflx)
-        {
-            switch (dflx)
-            {
-                case "801":
-                    return "独生子女";
-                case "802":
-                    return "乡村教师";
-                case "803":
-                    return "乡村医生";
-                case "807":
-                    return "电影放映员";
-            }
-            return "";
-        }
+        public static string GetDflxCN(string dflx) => SystemCode.Dfgl.GetLxCN(dflx);
 
         public DfrymdQuery(string dflx, string cbzt = "1", string dfzt = "1")
             : base("executeDfrymdQuery", 1, 500)
@@ -99,24 +85,7 @@ namespace YHCJB.HNCJB
         [JsonProperty("aac008s")]
         public string jbzt;
 
-        public string JbztCN
-        {
-            get
-            {
-                switch (jbzt)
-                {
-                    case "1":
-                        return "正常参保";
-                    case "2":
-                        return "暂停参保";
-                    case "3":
-                        return "未参保";
-                    case "4":
-                        return "终止参保";
-                }
-                return "";
-            }
-        }
+        public string JbztCN => SystemCode.Dfgl.GetJbztCN(jbzt);
 
         // 代发截至成功发放年月
         [JsonProperty("aae002jz")]
@@ -411,42 +380,7 @@ namespace YHCJB.HNCJB
 
         public string JbztCN => GetJbztCN(cbzt, jfzt);
 
-        public static string GetJbztCN(string cbzt, string jfzt)
-        {
-            switch (jfzt)
-            {
-                case "3": //终止缴费
-                    switch (cbzt)
-                    {
-                        case "1":
-                            return "正常待遇人员";
-                        case "2":
-                            return "暂停待遇人员";
-                        case "4":
-                            return "终止参保人员";
-                        default:
-                            return "其他终止缴费人员";
-                    }
-                case "1": //参保缴费
-                    switch (cbzt)
-                    {
-                        case "1":
-                            return "正常缴费人员";
-                        default:
-                            return "其他参保缴费人员";
-                    }
-                case "2": //暂停缴费
-                    switch (cbzt)
-                    {
-                        case "2":
-                            return "暂停缴费人员";
-                        default:
-                            return "其他暂停缴费人员";
-                    }
-                default:
-                    return "其他未知类型人员";
-            }
-        }
+        public static string GetJbztCN(string cbzt, string jfzt) => SystemCode.Cbgl.GetJbztCN(cbzt, jfzt);
     }
 
     // 省内参保信息查询
@@ -1330,27 +1264,5 @@ namespace YHCJB.HNCJB
     {
         public string remark = "";
         public AuditInfoChangePass() : base("auditInformationChangePassService") {}
-    }
-
-    public static class SystemCode
-    {
-        static Dictionary<string, string> _cbsfMap = new Dictionary<string, string>()
-        {
-            {"011", "普通参保人员"},
-            {"021", "残一级"},
-            {"022", "残二级"},
-            {"031", "特困一级"},
-            {"051", "贫困人口一级"},
-            {"061", "低保对象一级"},
-            {"062", "低保对象二级"},
-        };
-        
-        public static string GetCbsfCN(string code)
-        {
-            if (_cbsfMap.TryGetValue(code, out var cn))
-                return cn;
-            else
-                throw new ApplicationException($"Unknown type '{code}'");
-        }
     }
 }

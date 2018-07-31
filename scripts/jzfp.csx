@@ -19,6 +19,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System.Collections.Generic;
+using System.Linq;
 
 void resetTitle(ISheet sheet, string type)
 {
@@ -534,21 +535,9 @@ void splitFpmx(string fpmxExcel = @"D:\残疾特困\201806清理数据\特殊参
                string splitTmpl = @"D:\残疾特困\201806清理数据\乡镇街扶贫底册模板.xlsx",
                string outdir = @"D:\残疾特困\201806清理数据\乡镇街扶贫底册")
 {
-    var dict = new Dictionary<string, List<int>>()
-    {
-        {"楠竹山镇", new List<int>()},
-        {"姜畲镇", new List<int>()},
-        {"鹤岭镇", new List<int>()},
-        {"长城乡", new List<int>()},
-        {"窑湾街道", new List<int>()},
-        {"雨湖路街道", new List<int>()},
-        {"云塘街道", new List<int>()},
-        {"城正街街道", new List<int>()},
-        {"广场街道", new List<int>()},
-        {"先锋街道", new List<int>()},
-        {"万楼街道", new List<int>()},
-        {"昭潭街道", new List<int>()},
-    };
+    var dict = new Dictionary<string, List<int>>(
+        SystemCode.Xzqh.Xzj.Select(
+            xzqh => new KeyValuePair<string, List<int>>(xzqh, new List<int>())));
 
     var wb = ExcelExtension.LoadExcel(fpmxExcel);
     var sheet = wb.GetSheetAt(0);
@@ -578,7 +567,7 @@ void splitFpmx(string fpmxExcel = @"D:\残疾特困\201806清理数据\特殊参
             var jbname = sheet.Cell(row, 5).CellValue();
             var jbsf = sheet.Cell(row, 6).CellValue() ?? "";
             if (jbsf != "")
-                jbsf = SystemCode.GetCbsfCN(jbsf);
+                jbsf = SystemCode.Cbgl.GetCbsfCN(jbsf);
             var rydz = sheet.Cell(row, 18).CellValue();
 
             var outrow = outsheet.GetOrCopyRowFrom(idx, 1);
@@ -622,4 +611,4 @@ void splitFpmx(string fpmxExcel = @"D:\残疾特困\201806清理数据\特殊参
 //initJZFPDatabase();
 //updateFpmx();
 
-splitFpmx();
+//splitFpmx();
