@@ -75,6 +75,46 @@ public class LSCBRY
     public string Cbsj { get; set; }
 }
 
+[Table("2018年居保缴费明细数据")]
+public class JBJFMX
+{
+    [Column("行政区划名称"), Required]
+    public string Xzqh { get; set; }
+
+    [Column("户籍")]
+    public string Hj { get; set; }
+
+    [Column("姓名"), Required]
+    public string Xm { get; set; }
+
+    [Key, Column("身份证"), Required]
+    public string Sfz { get; set; }
+
+    [Column("性别"), Required]
+    public string Xb { get; set; }
+
+    [Column("参保身份")]
+    public string Cbsf { get; set; }
+
+    [Column("缴费年度")]
+    public string Jfnd { get; set; }
+
+    [Column("个缴")]
+    public decimal Gj { get; set; }
+
+    [Column("省补")]
+    public decimal Shenb { get; set; }
+
+    [Column("市补")]
+    public decimal Shib { get; set; }
+
+    [Column("县补")]
+    public decimal Xianb { get; set; }
+
+    [Column("代缴")]
+    public decimal Dj { get; set; }
+}
+
 public class JZFPContext : DbContext
 {
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -84,4 +124,5 @@ public class JZFPContext : DbContext
 
     public DbSet<TSCBRY> TSCBRYs { get; set; }
     public DbSet<LSCBRY> LSCBRYs { get; set; }
+    public DbSet<JBJFMX> JBJFMXs { get; set; }
 }
