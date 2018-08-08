@@ -16,6 +16,7 @@ using YHCJB.Util;
 using YHCJB.HNCJB;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
 using System.Collections.Generic;
@@ -591,6 +592,96 @@ void splitFpmx(string fpmxExcel = @"D:\残疾特困\201806清理数据\特殊参
     wb.Close();
 }
 
+void LoadJfmx(string fileName = @"D:\残疾特困\2018年特殊参保人员缴费调整\2018年居保缴费明细数据20180808.xls")
+{
+    using (var context = new JZFPContext())
+    {
+        //context.Database.EnsureCreated();
+        //var dbCreator = (RelationalDatabaseCreator)context.Database.GetService<IDatabaseCreator>();
+        //Console.WriteLine(dbCreator.GenerateCreateScript());
+        context.Database.ExecSql("delete from 2018年居保缴费明细数据;");
+        context.Database.LoadExcel<JBJFMX>(fileName);
+    }
+}
+
+void CheckJfmx(string tmplExcel = @"D:\残疾特困\2018年特殊参保人员缴费调整\居保特殊人员缴费明细数据模板.xls",
+               string outExcel = @"D:\残疾特困\2018年特殊参保人员缴费调整\2018年度居保参保人员缴费明细数据20180808.xls")
+{
+    decimal Ydj(string cbsf)
+    {
+        switch (cbsf)
+        {
+            case "051":
+            case "031":
+            case "021":
+            case "061":
+                return 100m;
+            case "022":
+            case "062":
+                return 60m;
+            default:
+                return 0m;
+        }
+    }
+    
+    var outWb = ExcelExtension.LoadExcel(tmplExcel);
+    var outSheet = outWb.GetSheetAt(0);
+    using (var context = new JZFPContext())
+    {
+        //var jfmxs = context.JBJFMXs.Where(jf => jf.Cbsf != "011")
+        //    .GroupBy(jf => jf.Sfz);
+        var jfmxs = context.JBJFMXs.GroupBy(jf => jf.Sfz);
+        var xh = 1;
+        foreach (var jfmx in jfmxs)
+        {
+            var sfz = jfmx.Key;
+            var xm = "";
+            var xzqh = "";
+            var cbsf = "";
+            var jfnd = "";
+            decimal gj = 0;
+            decimal shenb = 0;
+            decimal shib = 0;
+            decimal xianb = 0;
+            decimal dj = 0;
+            var jfcs = 0;
+            foreach (var jf in jfmx)
+            {
+                xm = jf.Xm;
+                xzqh = jf.Xzqh;
+                cbsf = jf.Cbsf;
+                jfnd = jfnd != "" ? $"{jfnd}|{jf.Jfnd}" : jf.Jfnd;
+                gj += jf.Gj;
+                shenb += jf.Shenb;
+                shib += jf.Shib;
+                xianb += jf.Xianb;
+                dj += jf.Dj;
+                jfcs += 1;
+            }
+            
+            decimal ydj = Ydj(cbsf);
+            var row = outSheet.GetOrCopyRowFrom(xh, 1);
+            row.Cell(0).SetValue(xh);
+            row.Cell(1).SetValue(xzqh);
+            row.Cell(2).SetValue(sfz);
+            row.Cell(3).SetValue(xm);
+            row.Cell(4).SetValue(cbsf);
+            row.Cell(6).SetValue(jfcs);
+            row.Cell(5).SetValue(jfnd);
+            row.Cell(7).SetValue((float)gj);
+            row.Cell(8).SetValue((float)shenb);
+            row.Cell(9).SetValue((float)shib);
+            row.Cell(10).SetValue((float)xianb);
+            row.Cell(11).SetValue((float)ydj);
+            row.Cell(12).SetValue((float)dj);
+            row.Cell(13).SetValue((float)(ydj-dj));
+            Console.WriteLine($"{xh}|{xzqh}|{sfz}|{xm}|{cbsf}|{jfnd}|{jfcs}|{gj:00.00}|{shenb:00.00}|{shib:00.00}|{xianb:00.00}|{ydj:00.00}|{dj:00.00}");
+            xh += 1;
+        }
+    }
+    outWb.Save(outExcel);
+}
+
 //purifyfpdata();
 //purifyTkData();
 //purifyDbData();
@@ -612,3 +703,6 @@ void splitFpmx(string fpmxExcel = @"D:\残疾特困\201806清理数据\特殊参
 //updateFpmx();
 
 //splitFpmx();
+
+//LoadJfmx();
+CheckJfmx();

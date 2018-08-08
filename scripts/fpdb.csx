@@ -78,6 +78,9 @@ public class LSCBRY
 [Table("2018年居保缴费明细数据")]
 public class JBJFMX
 {
+    [Key, Column("序号"), Required]
+    public int NO { get; set; }
+    
     [Column("行政区划名称"), Required]
     public string Xzqh { get; set; }
 
@@ -87,7 +90,7 @@ public class JBJFMX
     [Column("姓名"), Required]
     public string Xm { get; set; }
 
-    [Key, Column("身份证"), Required]
+    [Column("身份证"), Required]
     public string Sfz { get; set; }
 
     [Column("性别"), Required]
