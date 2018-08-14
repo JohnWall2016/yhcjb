@@ -35,8 +35,6 @@ void Cbdjsh(Action<Session, Session, string, string> additionalAction = null)
             var res = session002.Get<Result<Cbsh>>();
             foreach (var r in res.datas)
             {
-                //if (r.pid != "430321198109271563") continue;
-
                 var grinfo = $"{r.name}|{r.pid}|{r.aaf102}";
                 if (r.birthday < 19510701)
                 {
@@ -61,7 +59,6 @@ void Cbdjsh(Action<Session, Session, string, string> additionalAction = null)
                     additionalAction(session002, session007, r.pid, r.name);
                 }
             }
-            //UpdateCbsf(session002, session007, "430321198109271563", "陈洪波");
         });
     });
 }
