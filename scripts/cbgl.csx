@@ -245,7 +245,7 @@ async Task CbdjshLoop(CancellationToken token, TimeSpan delay)
 /// <summary>
 ///   开始批量审核参保登记数据
 /// </summary>
-void startCbdjshLoop(TimeSpan delay)
+void StartCbdjshLoop(TimeSpan delay)
 {
     var source = new CancellationTokenSource();
 
@@ -260,4 +260,4 @@ void startCbdjshLoop(TimeSpan delay)
     task.GetAwaiter().GetResult(); // block;
 }
 
-startCbdjshLoop(TimeSpan.FromMinutes(10));
+StartCbdjshLoop(TimeSpan.FromMinutes(10));
