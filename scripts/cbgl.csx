@@ -39,12 +39,12 @@ void Cbdjsh(Action<Session, Session, string, string> additionalAction = null)
                 if (r.birthday < 19510701)
                 {
                     logger.Info($"无需缴费的到龄人员不自动审核｜{grinfo}");
-                    break;
+                    continue;
                 }
                 else if (r.type != "011")
                 {
                     logger.Info($"非普通参保人员不自动审核｜{grinfo}");
-                    break;
+                    continue;
                 }
 
                 var saves = new CbshGotoSave();
@@ -260,4 +260,4 @@ void StartCbdjshLoop(TimeSpan delay)
     task.GetAwaiter().GetResult(); // block;
 }
 
-StartCbdjshLoop(TimeSpan.FromMinutes(10));
+StartCbdjshLoop(TimeSpan.FromMinutes(5));
