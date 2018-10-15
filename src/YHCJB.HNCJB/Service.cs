@@ -48,6 +48,8 @@ namespace YHCJB.HNCJB
         {
             Id = serviceid;
         }
+
+        public override string ToString() => JsonExtension.ToJson(this);
     }
 
     public class PageService : CustomService
@@ -93,10 +95,14 @@ namespace YHCJB.HNCJB
     {
         public int rowcount, page, pagesize;
         public string serviceid, type, vcode, message, messagedetail;
+
+        public override string ToString() => JsonExtension.ToJson(this);
     }
 
     public class Result<TData> : Result where TData : class
     {
         public TData[] datas;
+
+        public TData this[int i] => datas[i];
     }
 }

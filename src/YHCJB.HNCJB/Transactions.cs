@@ -1268,73 +1268,78 @@ namespace YHCJB.HNCJB
 
     public class PausePayInfoQuery : PageService
     {
-        string aaf013, aaz070;
+        public string aaf013 = "", aaz070 = "";
 
         [JsonProperty("aac002")]
-        string idcard;
+        public string idcard = "";
 
-        string aae141, aae141s;
+        public string aae141 = "", aae141s = "";
 
         [JsonProperty("aae016")]
-        string audited = "1";
+        public string audited = "1";
 
-        string aae036, aae036s, aac009, aae015, aae015s, aae116;
+        public string aae036 = "", aae036s = "";
+        public string aac009 = "", aae015 = "";
+        public string aae015s = "", aae116 = "";
 
-        public PausePayInfoQuery(string idcard) : base("queryAllPausePersonInfosForAuditService") {}
+        public PausePayInfoQuery(string idcard) : base("queryAllPausePersonInfosForAuditService")
+        {
+            this.idcard = idcard;
+        }
     }
 
     public class PausePayInfo
     {
         [JsonProperty("aac001")]
-        public string id;
+        public string Id;
 
         [JsonProperty("aac002")]
-        public string idcard;
+        public string Idcard;
 
         [JsonProperty("aac003")]
-        public string name;
+        public string Name;
 
         [JsonProperty("aac004")]
-        public string sex;
+        public string Sex;
 
         [JsonProperty("aac005")]
-        public string nation;
+        public string Nation;
 
         [JsonProperty("aac009")]
-        public string householdType;
+        public string HouseholdType;
 
         [JsonProperty("aae016")]
-        public string audited;
+        public string Audited;
 
         [JsonProperty("aae013")]
-        public string memo;
+        public string Memo;
 
         [JsonProperty("aae036")]
-        public string operateTime;
+        public string OperateTime;
 
         [JsonProperty("aae015")]
-        public string auditTime;
+        public string AuditTime;
 
         [JsonProperty("aae160")]
-        public string pauseReason;
+        public string PauseReason;
 
         [JsonProperty("aae141")]
-        public string pauseTime;
+        public string PauseTime;
 
         [JsonProperty("aae140")]
         public string InsuranceType; // "170": 居保
 
         // 村组行政区划编码
         [JsonProperty("aaf101")]
-        public string divisionCode;
+        public string DivisionCode;
 
         // 村组名称
         [JsonProperty("aaf102")]
-        public string communeName;
+        public string CommuneName;
 
         // 村社区名称
         [JsonProperty("aaf103")]
-        public string subcommuneName;
+        public string SubcommuneName;
 
         public int aaz159, aaz173;
     }
