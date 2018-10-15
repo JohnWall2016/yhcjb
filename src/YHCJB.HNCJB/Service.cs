@@ -8,7 +8,7 @@ namespace YHCJB.HNCJB
     {
         string Id { get; }
     }
-    
+
     public class Service : Json<Service>
     {
         public string serviceid { get; } = "";
@@ -38,12 +38,12 @@ namespace YHCJB.HNCJB
 
         public static implicit operator string(Service serv) => serv?.ToJson() ?? "";
     }
-    
+
     public class CustomService : IService
     {
         [JsonIgnore]
         public string Id { get; }
-        
+
         public CustomService(string serviceid)
         {
             Id = serviceid;

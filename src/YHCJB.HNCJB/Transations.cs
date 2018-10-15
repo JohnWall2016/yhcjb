@@ -55,13 +55,13 @@ namespace YHCJB.HNCJB
     {
         [JsonProperty("aac001")]
         public int id;
-        
+
         [JsonProperty("aaf103")]
         public string region;
-            
+
         [JsonProperty("aac003")]
         public string name;
-        
+
         [JsonProperty("aac002")]
         public string pid;
 
@@ -142,21 +142,21 @@ namespace YHCJB.HNCJB
         public string aae476 = "";
 
         public int aaz165;
-        
+
         public string aaf103 = ""; // 村社区名称
 
         [JsonProperty("aac001")]
         public int id;
-        
+
         public string aae140 = ""; // 社保类型: "170":居保
-        
+
         public string aaf102 = ""; // 到组名称
 
         [JsonProperty("aac002")]
         public string pid = ""; // 身份证号码
 
         public string aaf101 = ""; // 到组编码
-        
+
         public string aaa129 = ""; // 县市区名称
 
         public string aae016 = "";
@@ -165,7 +165,7 @@ namespace YHCJB.HNCJB
 
         //"aae013":null,
         //"aae014":null, 审核人审核前为空
-        
+
         public string aae036 = ""; // 录入时间
 
         //"aae015":null, 审核时间审核前为空
@@ -217,7 +217,7 @@ namespace YHCJB.HNCJB
         public new string id;
 
         public new string aaz177;
-        
+
         public string aaa129cj = "";
     }
 
@@ -330,7 +330,7 @@ namespace YHCJB.HNCJB
 
         [JsonProperty("aac002")]
         public string pid = ""; // 身份证号码
-        
+
         public GrinfoQuery(string pid) : base("zhcxgrinfoQuery")
         {
             this.pid = pid;
@@ -897,7 +897,7 @@ namespace YHCJB.HNCJB
             var ylj = apmx.zzqylj ?? "";
             if (ylj.EndsWith(".0"))
                 ylj = ylj.Substring(0, ylj.Length - 2);
-            
+
             this.dyzz_tre = new DyzzTre
             {
                 zzqylj = ylj,
@@ -970,7 +970,7 @@ namespace YHCJB.HNCJB
 
         [JsonProperty("aaf030")]
         public string csbm; // 村社区编码
-        
+
         [JsonProperty("aaf103")]
         public string csmc; // 村社区名称
 
@@ -1080,7 +1080,7 @@ namespace YHCJB.HNCJB
 
         [JsonProperty("aae013")]
         public string bz; // 备注
-        
+
         [JsonProperty("aac002Now")]
         public string pidnow; // 身份证号码
 
@@ -1187,7 +1187,7 @@ namespace YHCJB.HNCJB
     public class InfoChangeForAuditQuery : PageService
     {
         public string aaf013 = "", aaf030 = "", aae016 = "0"/*未审核*/;
-        
+
         [JsonProperty("aac002")]
         public string pid = ""; // 身份证号码
 
@@ -1197,7 +1197,7 @@ namespace YHCJB.HNCJB
         public string aae011 = "", aae036 = "", aae036s = "";
         public string aae014 = "", aae015 = "", aae015s = "";
         public string aac009 = "";
-        
+
         public InfoChangeForAuditQuery(string pid, string name = "")
             : this("queryInfoChangeForAuditService")
         {
@@ -1246,7 +1246,7 @@ namespace YHCJB.HNCJB
     {
         [JsonProperty("aac006")]
         public new string birthday;
-        
+
         [JsonProperty("aaz070")]
         public new string fzbm; // 村社区分组编码
 
@@ -1265,4 +1265,79 @@ namespace YHCJB.HNCJB
         public string remark = "";
         public AuditInfoChangePass() : base("auditInformationChangePassService") {}
     }
+
+    public class PausePayInfoQuery : PageService
+    {
+        string aaf013, aaz070;
+
+        [JsonProperty("aac002")]
+        string idcard;
+
+        string aae141, aae141s;
+
+        [JsonProperty("aae016")]
+        string audited = "1";
+
+        string aae036, aae036s, aac009, aae015, aae015s, aae116;
+
+        public PausePayInfoQuery(string idcard) : base("queryAllPausePersonInfosForAuditService") {}
+    }
+
+    public class PausePayInfo
+    {
+        [JsonProperty("aac001")]
+        public string id;
+
+        [JsonProperty("aac002")]
+        public string idcard;
+
+        [JsonProperty("aac003")]
+        public string name;
+
+        [JsonProperty("aac004")]
+        public string sex;
+
+        [JsonProperty("aac005")]
+        public string nation;
+
+        [JsonProperty("aac009")]
+        public string householdType;
+
+        [JsonProperty("aae016")]
+        public string audited;
+
+        [JsonProperty("aae013")]
+        public string memo;
+
+        [JsonProperty("aae036")]
+        public string operateTime;
+
+        [JsonProperty("aae015")]
+        public string auditTime;
+
+        [JsonProperty("aae160")]
+        public string pauseReason;
+
+        [JsonProperty("aae141")]
+        public string pauseTime;
+
+        [JsonProperty("aae140")]
+        public string InsuranceType; // "170": 居保
+
+        // 村组行政区划编码
+        [JsonProperty("aaf101")]
+        public string divisionCode;
+
+        // 村组名称
+        [JsonProperty("aaf102")]
+        public string communeName;
+
+        // 村社区名称
+        [JsonProperty("aaf103")]
+        public string subcommuneName;
+
+        public int aaz159, aaz173;
+    }
+
+
 }
