@@ -331,6 +331,8 @@ namespace YHCJB.HNCJB
         [JsonProperty("aac002")]
         public string pid = ""; // 身份证号码
 
+        public string aae478 = "";
+
         public GrinfoQuery(string pid) : base("zhcxgrinfoQuery")
         {
             this.pid = pid;
@@ -381,6 +383,8 @@ namespace YHCJB.HNCJB
         public string JbztCN => GetJbztCN(cbzt, jfzt);
 
         public static string GetJbztCN(string cbzt, string jfzt) => SystemCode.Cbgl.GetJbztCN(cbzt, jfzt);
+
+        public string Dwmc => SystemCode.Xzqh.GetXzjCN(xzqh.Substring(0, 8));
     }
 
     // 省内参保信息查询

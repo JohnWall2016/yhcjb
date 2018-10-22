@@ -104,5 +104,7 @@ namespace YHCJB.HNCJB
         public TData[] datas;
 
         public TData this[int i] => datas[i];
+        
+        public int Length => datas.Length;
     }
 }
