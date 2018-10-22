@@ -48,6 +48,8 @@ void UpdateIneritanceTable(string xls = @"D:\暂停终止\死亡继承\死亡继
             
             if (pinfo.Length <= 0) continue;
 
+            Console.WriteLine($"{pinfo[0].czmc}|{pinfo[0].Dwmc}|{pinfo[0].JbztCN}");
+            
             row.GetCell(4).SetValue(pinfo[0].czmc);
             row.GetCell(5).SetValue(pinfo[0].Dwmc);
             row.GetCell(6).SetValue(pinfo[0].JbztCN);
