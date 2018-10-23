@@ -1348,5 +1348,45 @@ namespace YHCJB.HNCJB
         public int aaz159, aaz173;
     }
 
+    public class YsswInfoQuery : PageService
+    {
+        [JsonProperty("aac003")]
+        public string Name = "";
 
+        public string aae037s = "", aae037e = "";
+
+        [JsonProperty("aac002")]
+        public string Idcard = ""; // 身份证号码
+        
+        public string aaf013 = "", aaf101 = "", aac008 = "", hsbz = "";
+
+        public YsswInfoQuery(string idcard) : base("dsznswcxQuery")
+        {
+            Idcard = idcard;
+        }
+    }
+
+    public class YsswInfo
+    {
+        [JsonProperty("aac003")]
+        public string Name;
+
+        [JsonProperty("aae036")]
+        public string CompareTime;
+
+        [JsonProperty("aae037")]
+        public int DeathTime;
+
+        public int aaz701;
+
+        [JsonProperty("aac008")]
+        public string Jbzt;
+        
+        public string bz;
+        
+        public string aab301, hsbz, aaa027, bdzt, aaf101;
+
+        [JsonProperty("aac002")]
+        public string Idcard; // 身份证号码
+    }
 }

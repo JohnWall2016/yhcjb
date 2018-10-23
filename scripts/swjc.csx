@@ -57,7 +57,6 @@ void UpdateIneritanceTable(string xls = @"D:\暂停终止\死亡继承\死亡继
             string deathTime = row.GetCell(3).CellValue();
             session.Send(new PausePayInfoQuery(idcard));
             var info = session.Get<Result<PausePayInfo>>();
-
             if (info.Length > 0)
             {
                 Console.WriteLine($"{info[0].Idcard}|{info[0].Name}|{info[0].PauseTime}|"
@@ -79,6 +78,24 @@ void UpdateIneritanceTable(string xls = @"D:\暂停终止\死亡继承\死亡继
                 }
                 row.GetCell(10).SetValue(SystemCode.Dygl.GetDyztyyCN(info[0].PauseReason));
                 row.GetCell(11).SetValue(info[0].Memo);
+            }
+
+            session.Send(new YsswInfoQuery(idcard));
+            var swinfo = session.Get<Result<YsswInfo>>();
+            if (swinfo.Length > 0)
+            {
+                var swTime = string.Format("{0:D8}", swinfo[0].DeathTime);
+                row.GetCell(12).SetValue(swTime);
+                try 
+                {
+                    var deltaMonths = SubstractMonth(deathTime, swTime.Substring(0, 6));
+                    Console.WriteLine($"{deathTime} - {swTime} = {deltaMonths}");
+                    row.GetCell(13).SetValue(deltaMonths);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"无法计算时间差, {deathTime} - {swTime}: {ex}");
+                }
             }
         }
     });
